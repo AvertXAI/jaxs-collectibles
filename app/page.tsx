@@ -1,6 +1,7 @@
 "use client";
 import { useState } from 'react';
 import { Instagram, Facebook, Twitter, ShieldCheck } from 'lucide-react';
+import { AddProductForm } from '@/components/add-product-form';
 
 export default function Home() {
   const [showModal, setShowModal] = useState(true);
@@ -31,7 +32,10 @@ export default function Home() {
           <a href="https://twitter.com/client" className="hover:text-purple-500 transition-colors"><Twitter size={20} /></a>
         </div>
         <h1 className="text-3xl font-black italic tracking-tighter">JAX'S COLLECTIBLES</h1>
-        <button className="border border-white/20 px-6 py-2 text-xs font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">The Vault</button>
+        <div className="flex items-center gap-4">
+          <AddProductForm />
+          <button className="border border-white/20 px-6 py-2 text-xs font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">The Vault</button>
+        </div>
       </nav>
 
       {/* HERO SECTION */}
