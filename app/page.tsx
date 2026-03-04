@@ -34,6 +34,7 @@ export default function Home() {
         <h1 className="text-3xl font-black italic tracking-tighter">JAX'S COLLECTIBLES</h1>
         <div className="flex items-center gap-4">
           <AddProductForm />
+          <a href="/products" className="border border-white/20 px-6 py-2 text-xs font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">Products</a>
           <button className="border border-white/20 px-6 py-2 text-xs font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">The Vault</button>
         </div>
       </nav>
