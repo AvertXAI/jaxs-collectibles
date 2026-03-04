@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { X } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
 
 export function AddProductForm() {
   const [name, setName] = useState("");
@@ -32,15 +32,60 @@ export function AddProductForm() {
   const [tags, setTags] = useState("");
   const [notes, setNotes] = useState("");
   const [category, setCategory] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSaveDraft = () => {
     // Logic to save the form data as a draft to Supabase
     console.log("Saving draft...", { name, description, price, itemNumber, tags, notes, category });
   };
 
-  const handleAddNewProduct = () => {
-    // Logic to add the new product to the Supabase catalog
-    console.log("Adding new product...", { name, description, price, itemNumber, tags, notes, category });
+  const handleAddNewProduct = async () => {
+    if (!name || !price) {
+      alert("Please provide at least a Name and Price.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    const productData = {
+      name,
+      description,
+      price: parseFloat(price) || 0,
+      itemNumber,
+      category,
+      tags: tags ? tags.split(",").map((tag) => tag.trim()) : [],
+      notes,
+      stock: 1, // Defaulting to 1 for collectibles
+    };
+
+    try {
+      const response = await fetch("/api/add-product", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(productData),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert("Success! Item added to the Vault.");
+        // Reset form
+        setName("");
+        setDescription("");
+        setPrice("");
+        setItemNumber("");
+        setTags("");
+        setNotes("");
+        setCategory("");
+      } else {
+        alert(`Vault Error: ${result.error}`);
+      }
+    } catch (err) {
+      console.error("Connection Error:", err);
+      alert("Could not connect to the server. Check if your API route is set up.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -48,7 +93,7 @@ export function AddProductForm() {
       <DialogTrigger asChild>
         <Button variant="outline">Add New Product</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] md:max-w-[600px]">
+      <DialogContent className="sm:max-w-[425px] md:max-w-[600px] bg-background">
         <DialogHeader>
           <DialogTitle>Add New Product</DialogTitle>
           <DialogDescription>
@@ -72,15 +117,15 @@ export function AddProductForm() {
             <Label htmlFor="pictures" className="text-left md:text-right">
               Pictures
             </Label>
-            <Input id="pictures" type="file" multiple className="col-span-3" />
+            <Input id="pictures" type="file" multiple className="col-span-3" disabled />
           </div>
           <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-4">
-             <Label htmlFor="price" className="text-left md:text-right">
+            <Label htmlFor="price" className="text-left md:text-right">
               Price
             </Label>
             <Input id="price" type="number" value={price} onChange={(e) => setPrice(e.target.value)} className="col-span-3" />
           </div>
-           <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-4">
+          <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-4">
             <Label htmlFor="itemNumber" className="text-left md:text-right">
               Item #
             </Label>
@@ -88,28 +133,28 @@ export function AddProductForm() {
           </div>
           <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-4">
             <Label htmlFor="category" className="text-left md:text-right">
-                Collectible Category
+              Collectible Category
             </Label>
             <Select onValueChange={setCategory} value={category}>
-                <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder="Select a category" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="tv-shows">TV Shows</SelectItem>
-                    <SelectItem value="movies">Movies</SelectItem>
-                    <SelectItem value="sports">Sports</SelectItem>
-                    <SelectItem value="gambling">Gambling</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                </SelectContent>
+              <SelectTrigger className="col-span-3">
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="tv-shows">TV Shows</SelectItem>
+                <SelectItem value="movies">Movies</SelectItem>
+                <SelectItem value="sports">Sports</SelectItem>
+                <SelectItem value="gambling">Gambling</SelectItem>
+                <SelectItem value="other">Other</SelectItem>
+              </SelectContent>
             </Select>
           </div>
           <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-4">
             <Label htmlFor="blob" className="text-left md:text-right">
               Blob Input
             </Label>
-            <Input id="blob" type="file" className="col-span-3" />
+            <Input id="blob" type="file" className="col-span-3" disabled />
           </div>
-           <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-4">
+          <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-4">
             <Label htmlFor="tags" className="text-left md:text-right">
               Tags
             </Label>
@@ -123,23 +168,24 @@ export function AddProductForm() {
           </div>
         </div>
         <DialogFooter className="flex-col-reverse gap-2 sm:flex-row sm:justify-between">
-            <DialogClose asChild>
-                <Button type="button" variant="secondary">
-                    Cancel
-                </Button>
-            </DialogClose>
-            <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" onClick={handleSaveDraft}>
-                    Save Draft
-                </Button>
-                <Button type="submit" onClick={handleAddNewProduct}>
-                    Add New Product
-                </Button>
-            </div>
+          <DialogClose asChild>
+            <Button type="button" variant="secondary">
+              Cancel
+            </Button>
+          </DialogClose>
+          <div className="flex justify-end gap-2">
+            <Button type="button" variant="outline" onClick={handleSaveDraft} disabled={isSubmitting}>
+              Save Draft
+            </Button>
+            <Button type="button" onClick={handleAddNewProduct} disabled={isSubmitting}>
+              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isSubmitting ? "Adding to Vault..." : "Add New Product"}
+            </Button>
+          </div>
         </DialogFooter>
-         <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-            <X className="h-4 w-4" />
-            <span className="sr-only">Close</span>
+        <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+          <X className="h-4 w-4" />
+          <span className="sr-only">Close</span>
         </DialogClose>
       </DialogContent>
     </Dialog>

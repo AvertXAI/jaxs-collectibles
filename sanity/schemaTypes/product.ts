@@ -1,4 +1,4 @@
-import {defineField, defineType} from 'sanity'
+import { defineField, defineType } from 'sanity'
 
 export default defineType({
   name: 'product',
@@ -21,17 +21,37 @@ export default defineType({
       },
       validation: (Rule) => Rule.required(),
     }),
+    // New Field: Item Number
+    defineField({
+      name: 'itemNumber',
+      title: 'Item #',
+      type: 'string',
+    }),
+    // New Field: Category
+    defineField({
+      name: 'category',
+      title: 'Collectible Category',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Cards', value: 'cards' },
+          { title: 'Comics', value: 'comics' },
+          { title: 'Figures', value: 'figures' },
+          { title: 'Memorabilia', value: 'memorabilia' },
+        ],
+      },
+    }),
     defineField({
       name: 'description',
       title: 'Description',
       type: 'text',
     }),
     defineField({
-        name: 'images',
-        title: 'Images',
-        type: 'array',
-        of: [{type: 'image', options: {hotspot: true}}],
-      }),
+      name: 'images',
+      title: 'Images',
+      type: 'array',
+      of: [{ type: 'image', options: { hotspot: true } }],
+    }),
     defineField({
       name: 'price',
       title: 'Price',
@@ -43,6 +63,22 @@ export default defineType({
       title: 'Stock',
       type: 'number',
       validation: (Rule) => Rule.required().integer().min(0),
+    }),
+    // New Field: Tags
+    defineField({
+      name: 'tags',
+      title: 'Tags',
+      type: 'array',
+      of: [{ type: 'string' }],
+      options: {
+        layout: 'tags',
+      },
+    }),
+    // New Field: Internal Notes
+    defineField({
+      name: 'notes',
+      title: 'Notes (Internal)',
+      type: 'text',
     }),
   ],
 })
