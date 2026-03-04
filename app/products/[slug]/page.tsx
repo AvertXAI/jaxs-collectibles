@@ -2,13 +2,17 @@ import { groq } from "next-sanity";
 import { client } from "@/sanity/lib/client";
 import Image from "next/image";
 
+// 1. UPDATE: In Next.js 15, params must be a Promise in the type
 type Props = {
-    params: {
+    params: Promise<{
         slug: string;
-    };
+    }>;
 };
 
 export default async function Page({ params }: Props) {
+    // 2. UPDATE: You MUST await the params before using params.slug
+    const { slug } = await params;
+
     const product = await client.fetch(
         groq`*[_type == "product" && slug.current == $slug][0]{
             _id,
@@ -19,8 +23,11 @@ export default async function Page({ params }: Props) {
             price,
             stock,
         }`,
-        { slug: params.slug }
+        { slug: slug } // 3. Use the awaited slug here
     );
+
+    // Keep all your UI code exactly as it was
+    if (!product) return <div className="p-4">Product not found</div>;
 
     return (
         <div className="p-4">
@@ -33,7 +40,7 @@ export default async function Page({ params }: Props) {
                 </div>
                 <div>
                     <p className="text-gray-500">${product.price}</p>
-                    <p className="mt-4">{product.description}</p>
+                    <div className="mt-4">{product.description}</div>
                     <p className="mt-4">Stock: {product.stock}</p>
                 </div>
             </div>
