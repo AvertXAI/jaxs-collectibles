@@ -9,11 +9,6 @@ export default defineType({
     fields: [
         defineField({
             name: 'title',
-            title: 'Title',
-            type: 'string'
-        }),
-        defineField({
-            name: 'title',
             title: 'Category Title',
             type: 'string',
             validation: (Rule) => Rule.required(),

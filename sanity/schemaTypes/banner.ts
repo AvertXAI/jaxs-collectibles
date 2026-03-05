@@ -5,6 +5,10 @@ export default defineType({
     title: 'Banner',
     type: 'document',
     fields: [
-        defineField({ name: 'text', title: 'Banner Text', type: 'string' }),
+        defineField({
+            name: 'text',
+            title: 'Banner Text',
+            type: 'string'
+        }),
     ],
 })
