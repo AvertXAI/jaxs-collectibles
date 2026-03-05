@@ -19,11 +19,19 @@ const config: Config = {
     },
     extend: {
       colors: {
+        // Inside extend -> colors
         jax: {
-          burgundy: "#800020", // Deep brand primary
-          gold: "#D4AF37",     // Metallic accent
-          cream: "#FDFBF7",    // The "Light Mode" background
-          charcoal: "#1A1A1A", // Primary text for readability
+          cream: "#F2EFDF",
+          midnight: "#1B263B",
+          lime: "#32CD32",
+          teal: "#008080",
+          turquoise: "#40E0D0",
+          orange: "#FF8C00",
+          "red-orange": "#FF4500",
+          "light-blue": "#ADD8E6",
+          yellow: "#FFD700",
+          burgundy: "#590202",
+          gold: "#D9B36C",
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

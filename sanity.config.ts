@@ -35,13 +35,27 @@ export default defineConfig({
     '--black': '#1a1a1a',
     '--white': '#fff',
     '--gray': '#666',
+    '--gray-base': '#666',
+    '--background': '#FDFBF7',
     '--focus-color': '#D4AF37', // Gold focus
 
     /* Navigation / Links */
     '--component-bg': '#FDFBF7',
     '--component-text-color': '#800020', // Burgundy links/text
+    '--default-button-primary-color': '#800020',
+    '--default-button-success-color': '#059669',
+    '--default-button-danger-color': '#dc2626',
+    '--state-success-color': '#059669',
+    '--state-warning-color': '#eab308',
+    '--state-danger-color': '#dc2626',
+    '--state-info-color': '#3182ce',
+
 
     /* Branding */
     '--brand-primary': '#800020',
+    '--main-navigation-color': '#1a1a1a',
+    '--main-navigation-color--inverted': '#FDFBF7',
+    '--main-navigation-color--opaque': 'rgba(255, 255, 255, 0.7)',
+
   }) as any,
 })

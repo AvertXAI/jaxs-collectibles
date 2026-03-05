@@ -3,11 +3,44 @@
 @tailwind utilities;
 
 :root {
-  --jax-cream: #FDFBF7;
-  --jax-burgundy: #800020;
-  --jax-gold: #D4AF37;
-  --jax-charcoal: #333333;
-  /* Softened from #1A1A1A for a "lighter" feel */
+  /* Stabilizers */
+  --jax-cream: #F2EFDF;
+  --jax-midnight: #1B263B;
+
+  /* The Action Palette */
+  --jax-lime: #32CD32;
+  --jax-teal: #008080;
+  --jax-turquoise: #40E0D0;
+  --jax-orange: #FF8C00;
+  --jax-red-orange: #FF4500;
+  --jax-light-blue: #ADD8E6;
+  --jax-yellow: #FFD700;
+  --jax-burgundy: #590202;
+  --jax-gold: #D9B36C;
+}
+
+@layer base {
+  body {
+    background-color: var(--jax-cream) !important;
+    color: var(--jax-midnight);
+    @apply antialiased min-h-screen;
+  }
+}
+
+@layer components {
+
+  /* Use high-vibrancy colors for status tags and specific product badges */
+  .badge-new {
+    @apply bg-[var(--jax-lime)] text-white px-2 py-0.5 rounded-full text-[10px] font-bold;
+  }
+
+  .badge-hot {
+    @apply bg-[var(--jax-red-orange)] text-white px-2 py-0.5 rounded-full text-[10px] font-bold;
+  }
+
+  .badge-rare {
+    @apply bg-[var(--jax-yellow)] text-black px-2 py-0.5 rounded-full text-[10px] font-bold;
+  }
 }
 
 /* THE SOFT OVERRIDE */
@@ -43,3 +76,4 @@ button.primary-btn {
 button.primary-btn:hover {
   background-color: var(--jax-gold) !important;
 }
+

@@ -1,13 +1,15 @@
 import { defineField, defineType } from 'sanity'
+import { Package } from 'lucide-react'
 
 export default defineType({
   name: 'product',
-  title: 'Product',
+  title: 'Products',
   type: 'document',
+  icon: Package,
   fields: [
     defineField({
       name: 'name',
-      title: 'Name',
+      title: 'Product Name',
       type: 'string',
       validation: (Rule) => Rule.required(),
     }),
@@ -15,38 +17,53 @@ export default defineType({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
-      options: {
-        source: 'name',
-        maxLength: 96,
-      },
+      options: { source: 'name', maxLength: 96 },
       validation: (Rule) => Rule.required(),
     }),
+
+    // --- NEW: THE PRISM STATUS DROPDOWN ---
+    defineField({
+      name: 'availability',
+      title: 'Availability Status',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Available (Lime Green)', value: 'available' },
+          { title: 'Low Stock (Orange)', value: 'low-stock' },
+          { title: 'Sold Out (Red-Orange)', value: 'sold-out' },
+          { title: 'Pre-Order (Teal)', value: 'pre-order' },
+          { title: 'Vaulted (Midnight Blue)', value: 'vaulted' },
+        ],
+      },
+      initialValue: 'available',
+    }),
+
     defineField({
       name: 'price',
       title: 'Price',
       type: 'number',
       validation: (Rule) => Rule.required().positive(),
     }),
+
+    // --- UPDATED: CATEGORY & BRAND REFERENCES ---
+    // These link to your new schemas so the shop can "auto-populate"
+    defineField({
+      name: 'category',
+      title: 'Category',
+      type: 'reference',
+      to: [{ type: 'category' }],
+    }),
+    defineField({
+      name: 'brand',
+      title: 'Brand',
+      type: 'reference',
+      to: [{ type: 'brand' }],
+    }),
+
     defineField({
       name: 'description',
       title: 'Description',
       type: 'text'
-    }),
-    defineField({
-      name: 'category',
-      title: 'Collectible Category',
-      type: 'string',
-      options: {
-        list: [
-          { title: 'Cards', value: 'cards' },
-          { title: 'Comics', value: 'comics' },
-          { title: 'Figures', value: 'figures' },
-          { title: 'Memorabilia', value: 'memorabilia' },
-          { title: 'TV Shows', value: 'tv-shows' },
-          { title: 'Movies', value: 'movies' },
-          { title: 'Sports', value: 'sports' },
-        ],
-      },
     }),
     defineField({
       name: 'images',
@@ -56,21 +73,24 @@ export default defineType({
     }),
     defineField({
       name: 'stock',
-      title: 'Stock',
+      title: 'Stock Quantity',
       type: 'number',
       validation: (Rule) => Rule.required().integer().min(0),
     }),
     defineField({
       name: 'itemNumber',
-      title: 'Item #',
+      title: 'Item # / SKU',
       type: 'string'
     }),
+
+    // --- MERGED: COA SECTION ---
     defineField({
       name: 'coa',
       title: 'Certificate of Authenticity (COA)',
       type: 'object',
       fields: [
-        { name: 'id', title: 'COA ID / Serial Number', type: 'string' },
+        { name: 'verified', title: 'Verified Status', type: 'boolean', initialValue: true },
+        { name: 'id', title: 'Serial Number / COA ID', type: 'string' },
         {
           name: 'authenticator',
           title: 'Authenticated By',
@@ -84,21 +104,19 @@ export default defineType({
             ],
           },
         },
-        { name: 'verified', title: 'Verified Status', type: 'boolean', initialValue: true },
       ],
     }),
+
     defineField({
       name: 'tags',
       title: 'Tags',
       type: 'array',
       of: [{ type: 'string' }],
-      options: {
-        layout: 'tags',
-      },
+      options: { layout: 'tags' },
     }),
     defineField({
       name: 'notes',
-      title: 'Notes (Internal)',
+      title: 'Notes (Internal Only)',
       type: 'text'
     }),
   ],

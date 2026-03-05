@@ -6,6 +6,8 @@ import hotDeals from './hotDeals'
 import order from './order'
 import banner from './banner'
 import faq from './faq'
+import shipping from './shipping'
+import customer from './customer'
 
 // This is what the Studio actually reads to build your sidebar
 export const schema: { types: SchemaTypeDefinition[] } = {
@@ -17,7 +19,9 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     hotDeals,
     order,
     banner,
-    faq
+    faq,
+    shipping,
+    customer
   ],
 }
 
@@ -29,5 +33,7 @@ export const schemaTypes = [
   hotDeals,
   order,
   banner,
-  faq
+  faq,
+  shipping,
+  customer
 ]
