@@ -27,19 +27,21 @@ export default function Home() {
       )}
 
       {/* HEADER WITH SOCIALS */}
-      <nav className="p-8 flex justify-between items-center max-w-7xl mx-auto border-b border-[#D9B36C]/20">
-        <div className="flex gap-4">
+      <header className="vault-header">
+        <div className="socials-container">
           <a href="#" className="hover:text-[#590202] transition-colors"><Instagram size={20} /></a>
           <a href="#" className="hover:text-[#590202] transition-colors"><Facebook size={20} /></a>
           <a href="#" className="hover:text-[#590202] transition-colors"><Twitter size={20} /></a>
         </div>
-        <h1 className="text-3xl font-black italic tracking-tighter text-[#590202]">JAX'S COLLECTIBLES</h1>
-        <div className="flex items-center gap-4">
-          <AddProductForm />
-          <a href="/products" className="border border-[#1B263B]/20 px-6 py-2 text-xs font-black uppercase tracking-widest hover:bg-[#1B263B] hover:text-white transition-all rounded-full">Products</a>
-          <button className="bg-[#D9B36C] text-[#1B263B] px-6 py-2 text-xs font-black uppercase tracking-widest hover:bg-[#1B263B] hover:text-white transition-all rounded-full">The Vault</button>
+        <div className="brand-container">
+            <h1 className="brand-text">JAX'S COLLECTIBLES</h1>
         </div>
-      </nav>
+        <div className="actions-container">
+              <AddProductForm />
+              <a href="/products" className="border border-[#1B263B]/20 px-4 py-2 text-[10px] font-black uppercase tracking-widest hover:bg-[#1B263B] hover:text-white transition-all rounded-full">Products</a>
+              <button className="bg-[#D9B36C] text-[#1B263B] px-4 py-2 text-[10px] font-black uppercase tracking-widest hover:bg-[#1B263B] hover:text-white transition-all rounded-full">The Vault</button>
+        </div>
+      </header>
 
       {/* HERO SECTION */}
       <section className="py-24 flex flex-col justify-center items-center text-center px-6">

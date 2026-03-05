@@ -1,98 +1,63 @@
 'use client'
 import { useState } from 'react'
-import { Instagram, Facebook, Twitter, Menu, X, ShieldCheck, Home, Package, Vault, PlusCircle } from 'lucide-react'
+import { Instagram, Facebook, Twitter, Menu, X, Search } from 'lucide-react'
 import Link from 'next/link'
-import { AddProductForm } from './add-product-form'
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false)
 
     return (
-        <nav className="bg-[#F2EFDF] border-b border-[#D9B36C]/20 sticky top-0 z-[80] w-full">
-            <div className="max-w-7xl mx-auto px-4 py-6 md:px-8">
-
-                {/* TIER 1: THE BRAND (TOP & CENTERED) */}
-                <div className="text-center mb-6">
-                    <Link href="/">
-                        <h1 className="text-4xl md:text-6xl font-black italic tracking-tighter text-[#590202] hover:text-[#1B263B] transition-all duration-300">
-                            JAX'S COLLECTIBLES
-                        </h1>
-                    </Link>
-                </div>
-
-                {/* TIER 2: UTILITIES (SOCIALS LEFT, MENU RIGHT) */}
-                <div className="flex justify-between items-center border-t border-[#D9B36C]/10 pt-4">
-
-                    {/* SOCIALS - LEFT ALIGNED */}
-                    <div className="flex gap-4 md:gap-6 text-[#1B263B]/60">
-                        <a href="#" className="hover:text-[#590202] transition-transform hover:scale-125"><Instagram size={18} /></a>
-                        <a href="#" className="hover:text-[#590202] transition-transform hover:scale-125"><Facebook size={18} /></a>
-                        <a href="#" className="hover:text-[#590202] transition-transform hover:scale-125"><Twitter size={18} /></a>
-                    </div>
-
-                    {/* ACTION CLUSTER - RIGHT ALIGNED */}
-                    <div className="flex items-center gap-3">
-                        {/* Desktop Only Button */}
-                        <div className="hidden md:block">
-                            <AddProductForm />
-                        </div>
-
-                        {/* THE DROPDOWN TOGGLE */}
-                        <button
-                            onClick={() => setIsOpen(!isOpen)}
-                            className="flex items-center gap-2 bg-[#1B263B] text-[#F2EFDF] px-5 py-2.5 rounded-full font-black text-[10px] uppercase tracking-[0.2em] hover:bg-[#590202] transition-all active:scale-95 shadow-lg"
-                        >
-                            {isOpen ? <X size={16} /> : <Menu size={16} />}
-                            <span>{isOpen ? "Close" : "Menu"}</span>
-                        </button>
-                    </div>
-                </div>
+        <header className="vault-header">
+            {/* TIER 1: BRAND IDENTITY (BLOCK FLEX) */}
+            <div className="brand-row">
+                <Link href="/">
+                    <span className="brand-text">JAX'S COLLECTIBLES</span>
+                </Link>
             </div>
 
-            {/* DROPDOWN MENU PANEL */}
+            {/* TIER 2: NAV UTILITIES (JUSTIFIED FLEX) */}
+            <div className="utility-row">
+                {/* SOCIALS - START (LEFT) */}
+                <div className="flex items-center gap-5 text-[#1B263B]/60">
+                    <a href="#" className="hover:text-[#590202]"><Instagram size={18} /></a>
+                    <a href="#" className="hover:text-[#590202]"><Facebook size={18} /></a>
+                    <a href="#" className="hover:text-[#590202]"><Twitter size={18} /></a>
+                </div>
+
+                {/* MENU - END (RIGHT) */}
+                <button
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="menu-trigger"
+                >
+                    {isOpen ? <X size={14} /> : <Menu size={14} />}
+                    <span>{isOpen ? "Close" : "Menu"}</span>
+                </button>
+            </div>
+
+            {/* DROPDOWN DRAWER (ABSOLUTE TO PREVENT CONTENT JUMP) */}
             {isOpen && (
-                <div className="absolute top-full left-0 w-full bg-white shadow-2xl border-t border-[#D9B36C]/20 animate-in fade-in slide-in-from-top-2 duration-300">
-                    <div className="max-w-7xl mx-auto p-10 grid grid-cols-1 md:grid-cols-3 gap-12">
-
-                        {/* COLUMN 1: NAVIGATION */}
+                <div className="absolute top-full left-0 w-full bg-white border-t border-[#D9B36C]/20 shadow-2xl p-8 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <div className="max-w-7xl mx-auto flex flex-col gap-8">
                         <div className="flex flex-col gap-5">
-                            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#D9B36C] mb-2">Vault Navigation</p>
-                            <Link href="/" onClick={() => setIsOpen(false)} className="group flex items-center gap-4 text-xl font-black text-[#1B263B] hover:text-[#590202] transition-all">
-                                <Home size={20} className="group-hover:rotate-12 transition-transform" /> HOME
-                            </Link>
-                            <Link href="/products" onClick={() => setIsOpen(false)} className="group flex items-center gap-4 text-xl font-black text-[#1B263B] hover:text-[#590202] transition-all">
-                                <Package size={20} className="group-hover:rotate-12 transition-transform" /> ALL PRODUCTS
-                            </Link>
-                            <Link href="/admin/seed" onClick={() => setIsOpen(false)} className="group flex items-center gap-4 text-xl font-black text-[#1B263B] hover:text-[#590202] transition-all">
-                                <Vault size={20} className="group-hover:rotate-12 transition-transform" /> DATABASE SEEDER
-                            </Link>
+                            <Link href="/" onClick={() => setIsOpen(false)} className="text-2xl font-black text-[#1B263B] hover:text-[#590202]">HOME</Link>
+                            <Link href="/products" onClick={() => setIsOpen(false)} className="text-2xl font-black text-[#1B263B] hover:text-[#590202]">ALL PRODUCTS</Link>
+                            <Link href="/admin/seed" onClick={() => setIsOpen(false)} className="text-2xl font-black text-[#1B263B] hover:text-[#590202]">SEED VAULT</Link>
                         </div>
 
-                        {/* COLUMN 2: OPERATIONS */}
-                        <div className="flex flex-col gap-5">
-                            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#D9B36C] mb-2">Inventory Management</p>
-                            <div onClick={() => setIsOpen(false)} className="hover:scale-105 transition-transform origin-left">
-                                <AddProductForm />
+                        <div className="pt-6 border-t border-[#D9B36C]/10">
+                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#D9B36C] mb-4">Search the Collection</p>
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    placeholder="Search 50 rare items..."
+                                    className="w-full bg-[#F2EFDF] rounded-xl p-4 text-sm outline-none border border-[#D9B36C]/20"
+                                />
+                                <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-[#D9B36C]" size={20} />
                             </div>
-                            <button className="flex items-center gap-4 text-xl font-black text-[#1B263B] hover:text-[#590202] transition-all text-left">
-                                <PlusCircle size={20} /> BULK UPLOAD
-                            </button>
                         </div>
-
-                        {/* COLUMN 3: SECURITY INFO */}
-                        <div className="bg-[#F2EFDF] p-8 rounded-3xl border border-[#D9B36C]/30 flex flex-col justify-center">
-                            <div className="flex items-center gap-3 text-[#590202] mb-4">
-                                <ShieldCheck size={28} />
-                                <span className="font-black text-sm uppercase tracking-widest">Vault Security</span>
-                            </div>
-                            <p className="text-[11px] text-[#1B263B]/70 font-bold leading-relaxed">
-                                Every listed item is physically verified and cross-referenced with 3rd-party authentication servers.
-                            </p>
-                        </div>
-
                     </div>
                 </div>
             )}
-        </nav>
+        </header>
     )
 }
