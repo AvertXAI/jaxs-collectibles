@@ -32,16 +32,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.className} antialiased`}>
+    <html lang="en" className="light" style={{ colorScheme: 'light' }}>
+      <body className="bg-[#FDFBF7] text-[#1A1A1A] antialiased">
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="light" // CHANGED: Forced to light
+          forcedTheme="light"   // ADDED: Prevents any switching
+          enableSystem={false}  // CHANGED: Ignore OS settings
           disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+        ></ThemeProvider>
+        {children}
       </body>
     </html>
   );
