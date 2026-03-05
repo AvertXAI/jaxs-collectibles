@@ -1,12 +1,20 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Move this out of experimental for Next 16
-  cacheComponents: false,
-
+  /* config options here */
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'cdn.sanity.io',
+      },
+    ],
+  },
+  // If you specifically need to allow origins for Server Actions/Forms:
   experimental: {
-    // VS Code might show red, but Next.js needs this for 192.168.1.245
-    allowedDevOrigins: ["192.168.1.245", "localhost:3000"],
+    serverActions: {
+      allowedOrigins: ["192.168.1.245", "localhost:3000"],
+    },
   },
 };
 
