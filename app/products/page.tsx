@@ -1,3 +1,6 @@
+// app/products/[slug]/page.tsx
+export const dynamic = 'force-dynamic'
+import { createClient } from '@supabase/supabase-js'
 import { groq } from "next-sanity";
 import { client } from "@/sanity/lib/client";
 import ProductCard from "@/components/product-card";

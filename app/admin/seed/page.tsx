@@ -1,4 +1,7 @@
 'use client'
+
+export const dynamic = 'force-dynamic'
+
 import { createClient } from '@supabase/supabase-js'
 import { seedProducts } from "@/lib/seed-data";
 import { useState } from "react";
