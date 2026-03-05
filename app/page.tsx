@@ -1,10 +1,14 @@
 "use client";
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { Instagram, Facebook, Twitter, ShieldCheck } from 'lucide-react';
 import { AddProductForm } from '@/components/add-product-form';
 
 export default function Home() {
   const [showModal, setShowModal] = useState(true);
+  const pathname = usePathname();
+
+  if (pathname !== '/') return null;
 
   return (
     <main className="min-h-screen bg-[#050505] text-white font-sans selection:bg-purple-600">

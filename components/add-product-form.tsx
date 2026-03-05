@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabaseClient";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -22,9 +23,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { X, Loader2 } from "lucide-react";
+import { X, Loader2, Plus } from "lucide-react";
 
 export function AddProductForm() {
+  // FIX: Added the missing state variables
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Form States
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -32,161 +38,119 @@ export function AddProductForm() {
   const [tags, setTags] = useState("");
   const [notes, setNotes] = useState("");
   const [category, setCategory] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
-  const handleSaveDraft = () => {
-    // Logic to save the form data as a draft to Supabase
-    console.log("Saving draft...", { name, description, price, itemNumber, tags, notes, category });
-  };
+  // THE ADMIN GATE: Check if user is an admin on mount
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", user.id)
+          .single();
+        if (profile?.role === "admin") setIsAdmin(true);
+      }
+    };
+    checkUser();
+  }, []);
 
   const handleAddNewProduct = async () => {
-    if (!name || !price) {
-      alert("Please provide at least a Name and Price.");
-      return;
-    }
-
+    if (!name || !price) return alert("Name and Price are required.");
     setIsSubmitting(true);
 
-    const productData = {
-      name,
-      description,
-      price: parseFloat(price) || 0,
-      itemNumber,
-      category,
-      tags: tags ? tags.split(",").map((tag) => tag.trim()) : [],
-      notes,
-      stock: 1, // Defaulting to 1 for collectibles
-    };
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("description", description);
+    formData.append("price", price);
+    formData.append("itemNumber", itemNumber);
+    formData.append("category", category);
+    formData.append("tags", tags);
+    formData.append("notes", notes);
+    formData.append("stock", "1");
+    if (imageFile) formData.append("image", imageFile);
 
     try {
       const response = await fetch("/api/add-product", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(productData),
+        body: formData,
       });
 
       const result = await response.json();
 
       if (result.success) {
-        alert("Success! Item added to the Vault.");
-        // Reset form
-        setName("");
-        setDescription("");
-        setPrice("");
-        setItemNumber("");
-        setTags("");
-        setNotes("");
-        setCategory("");
+        alert("Success! Added to Vault.");
+        window.location.reload();
       } else {
-        alert(`Vault Error: ${result.error}`);
+        alert(`Error: ${result.error}`);
       }
     } catch (err) {
-      console.error("Connection Error:", err);
-      alert("Could not connect to the server. Check if your API route is set up.");
+      alert("Failed to connect to the Vault.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  // If not admin, don't show the component at all
+  if (!isAdmin) return null;
+
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">Add New Product</Button>
+        <Button className="border border-white/20 px-6 py-2 text-xs font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">
+          <Plus className="mr-2 h-4 w-4" />
+          Add Product
+        </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] md:max-w-[600px] bg-background">
+      <DialogContent className="sm:max-w-[425px] md:max-w-[600px] bg-zinc-950 border-zinc-800 text-white">
         <DialogHeader>
           <DialogTitle>Add New Product</DialogTitle>
-          <DialogDescription>
-            Add new product information. Click 'Add New Product' when you're done.
-          </DialogDescription>
+          <DialogDescription className="text-zinc-400">Enter collectible details below.</DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
+        <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto px-1">
           <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-4">
-            <Label htmlFor="name" className="text-left md:text-right">
-              Name
-            </Label>
-            <Input id="name" value={name} onChange={(e) => setName(e.target.value)} className="col-span-3" />
+            <Label htmlFor="name">Name</Label>
+            <Input id="name" value={name} onChange={(e) => setName(e.target.value)} className="col-span-3 bg-zinc-900 border-zinc-800" />
           </div>
           <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-4">
-            <Label htmlFor="description" className="text-left md:text-right">
-              Short Description
-            </Label>
-            <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} className="col-span-3" />
+            <Label htmlFor="pictures">Picture</Label>
+            <Input
+              id="pictures"
+              type="file"
+              accept="image/*"
+              onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+              className="col-span-3 bg-zinc-900 border-zinc-800"
+            />
           </div>
           <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-4">
-            <Label htmlFor="pictures" className="text-left md:text-right">
-              Pictures
-            </Label>
-            <Input id="pictures" type="file" multiple className="col-span-3" disabled />
+            <Label htmlFor="price">Price</Label>
+            <Input id="price" type="number" value={price} onChange={(e) => setPrice(e.target.value)} className="col-span-3 bg-zinc-900 border-zinc-800" />
           </div>
           <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-4">
-            <Label htmlFor="price" className="text-left md:text-right">
-              Price
-            </Label>
-            <Input id="price" type="number" value={price} onChange={(e) => setPrice(e.target.value)} className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-4">
-            <Label htmlFor="itemNumber" className="text-left md:text-right">
-              Item #
-            </Label>
-            <Input id="itemNumber" value={itemNumber} onChange={(e) => setItemNumber(e.target.value)} className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-4">
-            <Label htmlFor="category" className="text-left md:text-right">
-              Collectible Category
-            </Label>
+            <Label htmlFor="category">Category</Label>
             <Select onValueChange={setCategory} value={category}>
-              <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Select a category" />
+              <SelectTrigger className="col-span-3 bg-zinc-900 border-zinc-800">
+                <SelectValue placeholder="Select" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-zinc-900 border-zinc-800 text-white">
                 <SelectItem value="tv-shows">TV Shows</SelectItem>
                 <SelectItem value="movies">Movies</SelectItem>
                 <SelectItem value="sports">Sports</SelectItem>
-                <SelectItem value="gambling">Gambling</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-4">
-            <Label htmlFor="blob" className="text-left md:text-right">
-              Blob Input
-            </Label>
-            <Input id="blob" type="file" className="col-span-3" disabled />
-          </div>
-          <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-4">
-            <Label htmlFor="tags" className="text-left md:text-right">
-              Tags
-            </Label>
-            <Input id="tags" value={tags} onChange={(e) => setTags(e.target.value)} className="col-span-3" placeholder="Comma-separated tags" />
-          </div>
-          <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-4">
-            <Label htmlFor="notes" className="text-left md:text-right">
-              Notes
-            </Label>
-            <Textarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} className="col-span-3" />
+            <Label htmlFor="description">Description</Label>
+            <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} className="col-span-3 bg-zinc-900 border-zinc-800" />
           </div>
         </div>
-        <DialogFooter className="flex-col-reverse gap-2 sm:flex-row sm:justify-between">
-          <DialogClose asChild>
-            <Button type="button" variant="secondary">
-              Cancel
-            </Button>
-          </DialogClose>
-          <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={handleSaveDraft} disabled={isSubmitting}>
-              Save Draft
-            </Button>
-            <Button type="button" onClick={handleAddNewProduct} disabled={isSubmitting}>
-              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isSubmitting ? "Adding to Vault..." : "Add New Product"}
-            </Button>
-          </div>
+        <DialogFooter>
+          <Button type="button" onClick={handleAddNewProduct} disabled={isSubmitting} className="w-full bg-white text-black hover:bg-purple-600 hover:text-white font-black italic">
+            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+            {isSubmitting ? "ADDING TO VAULT..." : "ADD NEW PRODUCT"}
+          </Button>
         </DialogFooter>
-        <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-          <X className="h-4 w-4" />
-          <span className="sr-only">Close</span>
-        </DialogClose>
       </DialogContent>
     </Dialog>
   );

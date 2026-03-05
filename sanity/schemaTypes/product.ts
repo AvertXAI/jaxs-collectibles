@@ -21,13 +21,17 @@ export default defineType({
       },
       validation: (Rule) => Rule.required(),
     }),
-    // New Field: Item Number
     defineField({
-      name: 'itemNumber',
-      title: 'Item #',
-      type: 'string',
+      name: 'price',
+      title: 'Price',
+      type: 'number',
+      validation: (Rule) => Rule.required().positive(),
     }),
-    // New Field: Category
+    defineField({
+      name: 'description',
+      title: 'Description',
+      type: 'text'
+    }),
     defineField({
       name: 'category',
       title: 'Collectible Category',
@@ -38,13 +42,11 @@ export default defineType({
           { title: 'Comics', value: 'comics' },
           { title: 'Figures', value: 'figures' },
           { title: 'Memorabilia', value: 'memorabilia' },
+          { title: 'TV Shows', value: 'tv-shows' },
+          { title: 'Movies', value: 'movies' },
+          { title: 'Sports', value: 'sports' },
         ],
       },
-    }),
-    defineField({
-      name: 'description',
-      title: 'Description',
-      type: 'text',
     }),
     defineField({
       name: 'images',
@@ -53,18 +55,38 @@ export default defineType({
       of: [{ type: 'image', options: { hotspot: true } }],
     }),
     defineField({
-      name: 'price',
-      title: 'Price',
-      type: 'number',
-      validation: (Rule) => Rule.required().positive(),
-    }),
-    defineField({
       name: 'stock',
       title: 'Stock',
       type: 'number',
       validation: (Rule) => Rule.required().integer().min(0),
     }),
-    // New Field: Tags
+    defineField({
+      name: 'itemNumber',
+      title: 'Item #',
+      type: 'string'
+    }),
+    defineField({
+      name: 'coa',
+      title: 'Certificate of Authenticity (COA)',
+      type: 'object',
+      fields: [
+        { name: 'id', title: 'COA ID / Serial Number', type: 'string' },
+        {
+          name: 'authenticator',
+          title: 'Authenticated By',
+          type: 'string',
+          options: {
+            list: [
+              { title: 'PSA', value: 'psa' },
+              { title: 'JSA', value: 'jsa' },
+              { title: 'Beckett (BAS)', value: 'beckett' },
+              { title: 'Other', value: 'other' },
+            ],
+          },
+        },
+        { name: 'verified', title: 'Verified Status', type: 'boolean', initialValue: true },
+      ],
+    }),
     defineField({
       name: 'tags',
       title: 'Tags',
@@ -74,11 +96,10 @@ export default defineType({
         layout: 'tags',
       },
     }),
-    // New Field: Internal Notes
     defineField({
       name: 'notes',
       title: 'Notes (Internal)',
-      type: 'text',
+      type: 'text'
     }),
   ],
 })
