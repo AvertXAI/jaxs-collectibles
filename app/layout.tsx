@@ -3,6 +3,7 @@ import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import Header from "@/components/header";
+import AdminToolbar from "@/components/admin-toolbar";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -32,6 +33,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // NOTE: In a real app, you'd check a cookie/session here to hide the toolbar from customers
+  const showAdminToolbar = true;
+
   return (
     <html lang="en" className="light" style={{colorScheme: 'light'}}>
       <body className="bg-[#FDFBF7] text-[#1A1A1A] antialiased">
@@ -42,6 +46,10 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
+          {/* THE DUAL-VIEW SELECTOR */}
+          {showAdminToolbar && <AdminToolbar />}
+
+          {/* STICKY HEADER */}
           {/* 1. Header MUST be above children to stay at the top */}
           <Header />
           <main>

@@ -2,6 +2,7 @@
 
 import { visionTool } from '@sanity/vision'
 import { defineConfig } from 'sanity'
+import { SanityNavbar } from './components/sanity-navbar'
 import { structureTool } from 'sanity/structure'
 
 // Go to https://www.sanity.io/docs/api-versioning to learn how API versioning works
@@ -58,4 +59,11 @@ export default defineConfig({
     '--main-navigation-color--opaque': 'rgba(255, 255, 255, 0.7)',
 
   }) as any,
+
+  studio: {
+    components: {
+      navbar: SanityNavbar
+    }
+  }
+  
 })
