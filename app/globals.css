@@ -8,6 +8,7 @@
   --jax-midnight: #1B263B;
   --jax-burgundy: #590202;
   --jax-gold: #D9B36C;
+  --jax-paper: #FDFBF7;
 
   /* The Full Prism Palette */
   --jax-lime: #32CD32;
@@ -21,63 +22,62 @@
 
 @layer base {
 
-  /* This is the secret for mobile: stop all horizontal movement */
   html,
   body {
     @apply antialiased overflow-x-hidden w-full m-0 p-0;
-    background-color: var(--jax-cream) !important;
+    background-color: var(--jax-paper) !important;
     touch-action: manipulation;
-    /* Prevents accidental zooming while clicking buttons */
   }
 }
 
 @layer components {
-  /* --- RESPONSIVE VAULT HEADER --- */
+
+  /* --- THE GALLERY HEADER ARCHITECTURE --- */
   .vault-header {
-    @apply w-full bg-[var(--jax-cream)] border-b-2 border-[rgba(217,179,108,0.3)] sticky top-0 z-[100] px-4 py-4;
-    @apply flex flex-col items-center gap-4; /* Mobile: stacked and centered */
-    @apply md:grid md:grid-cols-3 md:items-center md:gap-4 md:px-6 md:py-2; /* Desktop: 3-column grid */
+    @apply w-full sticky top-0 z-[100] border-b border-[#D9B36C]/30 shadow-sm;
+    background-color: var(--jax-paper);
     transition: all 0.3s ease-in-out;
   }
 
-  .vault-header.scrolled {
-    @apply bg-[var(--jax-midnight)] text-[var(--jax-cream)];
-    border-bottom-color: transparent;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  /* Force Light Mode on the Auth Page and Dashboard */
+  .vault-access-bg {
+    @apply min-h-screen w-full flex items-center justify-center;
+    background-color: var(--jax-paper) !important;
+    /* Kills the Charcoal */
   }
 
-  .vault-header.scrolled .brand-text,
-  .vault-header.scrolled .socials-container a {
-    color: var(--jax-cream) !important;
-  }
-  
-  .socials-container {
-    @apply flex items-center justify-center gap-4; /* Mobile: centered */
-    @apply md:justify-start; /* Desktop: align left */
+  .header-container {
+    @apply max-w-[1800px] mx-auto px-6 md:px-12 py-5 flex items-center justify-between;
   }
 
-  .brand-container {
-    @apply order-first md:order-none; /* Mobile: brand on top. Desktop: natural order */
-    @apply text-center;
+  /* 1. Logo & Text (Left) - Claims 25% space */
+  .header-brand {
+    @apply flex items-center gap-6 flex-1 justify-start;
   }
 
-  .brand-text {
-    font-size: clamp(2rem, 10vw, 4rem);
-    @apply font-black italic tracking-tighter text-[var(--jax-burgundy)] uppercase;
-    line-height: 0.8;
+  /* 2. Navigation (Center) - Claims 50% space and forces center */
+  .header-nav {
+    @apply hidden xl:flex items-center justify-center gap-12 flex-[2];
   }
 
-  .actions-container {
-    @apply flex items-center justify-center gap-2;
-    @apply md:justify-end; /* Desktop: align right */
+  .nav-link {
+    @apply text-[14px] font-black uppercase tracking-[0.25em] text-[#1B263B] transition-all duration-300 hover:text-[#590202] hover:scale-105;
   }
 
-  /* MENU BUTTON STYLING */
+  /* 3. Utilities (Right) - Claims 25% space */
+  .header-utilities {
+    @apply flex items-center gap-8 flex-1 justify-end text-[#1B263B];
+  }
+
+  .utility-icon-group {
+    @apply flex items-center gap-6 border-r border-[#D9B36C]/30 pr-8;
+  }
+
+  /* --- EXISTING UI ELEMENTS --- */
   .menu-trigger {
     @apply flex items-center gap-2 bg-[var(--jax-midnight)] text-[var(--jax-cream)] px-5 py-2 rounded-full font-black text-[10px] uppercase tracking-widest shadow-lg active:scale-95 transition-all;
   }
 
-  /* PRISM BADGE SYSTEM */
   .badge-new {
     @apply bg-[var(--jax-lime)] text-white px-2 py-0.5 rounded-full text-[10px] font-bold;
   }
@@ -85,16 +85,18 @@
   .badge-hot {
     @apply bg-[var(--jax-red-orange)] text-white px-2 py-0.5 rounded-full text-[10px] font-bold;
   }
-}
 
-/* --- HOVER STATES & OVERRIDES --- */
+  /* --- ADMIN DASHBOARD THEME --- */
+  .admin-bg {
+    background-color: var(--jax-cream);
+  }
 
-@media (hover: hover) {
-  .menu-trigger:hover {
-    @apply bg-[var(--jax-burgundy)];
+  .admin-card {
+    @apply bg-white border border-[#D9B36C]/20 shadow-xl rounded-[2rem] p-10;
   }
 }
 
+/* --- GLOBAL TYPOGRAPHY --- */
 h1,
 h2,
 h3,
@@ -102,21 +104,7 @@ h3,
   color: var(--jax-burgundy) !important;
 }
 
-button.primary-btn,
-.menu-trigger {
-  background-color: var(--jax-midnight) !important;
-  color: white !important;
-  transition: all 0.3s ease;
-}
-
-@media (hover: hover) {
-  button.primary-btn:hover,
-  .menu-trigger:hover {
-    background-color: var(--jax-burgundy) !important;
-    color: white !important;
-  }
-}
-
-* {
-  border-color: rgba(27, 38, 59, 0.1);
+.brand-text {
+  @apply font-black italic tracking-tighter uppercase;
+  line-height: 0.8;
 }

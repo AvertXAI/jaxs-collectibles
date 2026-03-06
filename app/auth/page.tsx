@@ -53,9 +53,6 @@ export default function AuthPage() {
                     <a href="#" className="hover:text-purple-500 transition-colors"><Twitter size={20} /></a>
                 </div>
                 <h1 className="text-3xl font-black italic tracking-tighter">JAX'S COLLECTIBLES</h1>
-                <div className="flex items-center gap-4">
-                    <a href="/" className="border border-white/20 px-6 py-2 text-xs font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">Home</a>
-                </div>
             </nav>
 
             <div className="flex flex-col items-center justify-center pt-20 px-4">

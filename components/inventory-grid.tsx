@@ -51,7 +51,7 @@ export default function InventoryGrid() {
             {products.map((product: any) => (
                 <Link
                     key={product._id}
-                    href={`/products/${product.slug}`}
+                    href={`/shop/${product.slug}`}
                     className="group block bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800 hover:border-zinc-700 transition-all relative"
                 >
                     {/* VERIFIED BADGE - Shows if coa.verified is true in Sanity */}
