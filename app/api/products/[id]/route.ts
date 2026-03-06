@@ -4,9 +4,12 @@ import { adminClient } from '@/sanity/lib/client'
 // --- PATCH: UPDATE PRODUCT DETAILS ---
 export async function PATCH(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> } // FIXED: params is now a Promise
 ) {
-    const id = params.id
+    // RESOLVE THE PARAMS
+    const resolvedParams = await params;
+    const id = resolvedParams.id;
+
     const body = await request.json()
 
     try {
@@ -31,10 +34,15 @@ export async function PATCH(
 // --- DELETE: PURGE PRODUCT ---
 export async function DELETE(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> } // FIXED: params is now a Promise
 ) {
-    const id = params.id
+    // RESOLVE THE PARAMS
+    const resolvedParams = await params;
+    const id = resolvedParams.id;
+
     try {
+        if (!id) return NextResponse.json({ error: "Missing ID" }, { status: 400 })
+
         await adminClient.delete(id)
         return NextResponse.json({ message: `Asset ${id} successfully purged` })
     } catch (error) {
