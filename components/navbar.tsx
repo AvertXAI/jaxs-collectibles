@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { Instagram, Facebook, Twitter, Menu, X, Search } from 'lucide-react'
+import { Instagram, Facebook, Twitter, Menu, X, Search, Shield } from 'lucide-react'
 import Link from 'next/link'
 
 export default function Navbar() {

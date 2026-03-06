@@ -1,7 +1,6 @@
 "use client";
 import { useState } from 'react';
 import { Instagram, Facebook, Twitter, ShieldCheck } from 'lucide-react';
-import { AddProductForm } from '@/components/add-product-form';
 import ShopGrid from '@/components/shop-grid';
 
 export default function Home() {
@@ -26,23 +25,8 @@ export default function Home() {
         </div>
       )}
 
-      {/* HEADER WITH SOCIALS */}
-      <header className="vault-header">
-        <div className="socials-container">
-          <a href="#" className="hover:text-[#590202] transition-colors"><Instagram size={20} /></a>
-          <a href="#" className="hover:text-[#590202] transition-colors"><Facebook size={20} /></a>
-          <a href="#" className="hover:text-[#590202] transition-colors"><Twitter size={20} /></a>
-        </div>
-        <div className="brand-container">
-            <h1 className="brand-text">JAX'S COLLECTIBLES</h1>
-        </div>
-        <div className="actions-container">
-              <AddProductForm />
-              <a href="/products" className="border border-[#1B263B]/20 px-4 py-2 text-[10px] font-black uppercase tracking-widest hover:bg-[#1B263B] hover:text-white transition-all rounded-full">Products</a>
-              <button className="bg-[#D9B36C] text-[#1B263B] px-4 py-2 text-[10px] font-black uppercase tracking-widest hover:bg-[#1B263B] hover:text-white transition-all rounded-full">The Vault</button>
-        </div>
-      </header>
-
+      {/* HEADER IS NOW IN layout.tsx */}
+      
       {/* HERO SECTION */}
       <section className="py-24 flex flex-col justify-center items-center text-center px-6">
         <h2 className="text-7xl md:text-[10rem] font-black italic tracking-tighter leading-none mb-6">

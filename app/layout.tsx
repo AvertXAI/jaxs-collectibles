@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
+import Header from "@/components/header";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -32,16 +33,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="light" style={{ colorScheme: 'light' }}>
+    <html lang="en" className="light" style={{colorScheme: 'light'}}>
       <body className="bg-[#FDFBF7] text-[#1A1A1A] antialiased">
         <ThemeProvider
           attribute="class"
-          defaultTheme="light" // CHANGED: Forced to light
-          forcedTheme="light"   // ADDED: Prevents any switching
-          enableSystem={false}  // CHANGED: Ignore OS settings
+          defaultTheme="light"
+          forcedTheme="light"
+          enableSystem={false}
           disableTransitionOnChange
-        ></ThemeProvider>
-        {children}
+        >
+          {/* 1. Header MUST be above children to stay at the top */}
+          <Header />
+          <main>
+          {/* 2. Page content goes here */}
+          {children}
+          </main>
+        </ThemeProvider>
       </body>
     </html>
   );

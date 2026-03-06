@@ -1,22 +1,50 @@
+'use client'
+import { useState, useEffect } from 'react'
+import { createClient } from '@supabase/supabase-js'
 import { groq } from "next-sanity";
 import { client } from "@/sanity/lib/client";
 import Image from "next/image";
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
 
-export default async function InventoryGrid() {
-    // Fetch all products from Sanity including the new COA field
-    const products = await client.fetch(
-        groq`*[_type == "product"] | order(_createdAt desc) {
-      _id,
-      name,
-      "slug": slug.current,
-      price,
-      "imageUrl": images[0].asset->url,
-      category,
-      coa
-    }`
-    );
+// Supabase Init (Kept as requested)
+const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
+
+export default function InventoryGrid() {
+    const [products, setProducts] = useState<any[]>([])
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        async function fetchProducts() {
+            try {
+                // Fetching from Sanity as in your original code
+                const data = await client.fetch(
+                    groq`*[_type == "product"] | order(_createdAt desc) {
+                        _id,
+                        name,
+                        "slug": slug.current,
+                        price,
+                        "imageUrl": images[0].asset->url,
+                        category,
+                        coa
+                    }`
+                );
+                setProducts(data);
+            } catch (error) {
+                console.error("Sanity fetch error:", error);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchProducts();
+    }, [])
+
+    if (loading) {
+        return <div className="p-20 text-center font-black animate-pulse text-[#1B263B]">SCANNING THE VAULT...</div>
+    }
 
     return (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">

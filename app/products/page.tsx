@@ -42,8 +42,8 @@ export default function Home() {
     <main className="min-h-screen bg-[#F2EFDF] text-[#1B263B] font-sans selection:bg-[#590202] selection:text-white">
 
       {/* 1. BRAND NEW MOBILE-FRIENDLY NAVBAR */}
-      <Navbar />
-
+{/*       <Navbar />
+ */}
       {/* 2. EMAIL CAPTURE MODAL */}
       {showModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#1B263B]/90 backdrop-blur-md p-4">
