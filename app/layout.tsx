@@ -1,26 +1,11 @@
-import type { Metadata, Viewport } from "next";
+'use client'
+
+import { usePathname } from 'next/navigation'
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import Header from "@/components/header";
 import AdminToolbar from "@/components/admin-toolbar";
-
-const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : "http://localhost:3000";
-
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
-};
-
-export const metadata: Metadata = {
-  metadataBase: new URL(defaultUrl),
-  title: "Jax's Collectibles",
-  description: "The best high quality collectibles for your collection. From rare action figures to limited edition items, we have something for every collector.",
-};
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,12 +18,18 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // NOTE: In a real app, you'd check a cookie/session here to hide the toolbar from customers
+  const pathname = usePathname();
+
+  // LOGIC: Only hide the header if we are exactly in the Studio/Vault paths
+  // This ensures the header shows on /shop, /cart, and the Home page.
+  const isStudioView = pathname.startsWith('/vault') || pathname.startsWith('/studio');
+
+  // ADMIN AUTH: Set this to true to see the toolbar during dev
   const showAdminToolbar = true;
 
   return (
-    <html lang="en" className="light" style={{colorScheme: 'light'}}>
-      <body className="bg-[#FDFBF7] text-[#1A1A1A] antialiased">
+    <html lang="en" className="light" style={{ colorScheme: 'light' }}>
+      <body className={`bg-[#FDFBF7] text-[#1A1A1A] antialiased ${geistSans.variable}`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
@@ -46,15 +37,14 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
-          {/* THE DUAL-VIEW SELECTOR */}
+          {/* 1. ADMIN TOOLBAR: Stays at the absolute top */}
           {showAdminToolbar && <AdminToolbar />}
 
-          {/* STICKY HEADER */}
-          {/* 1. Header MUST be above children to stay at the top */}
-          <Header />
-          <main>
-          {/* 2. Page content goes here */}
-          {children}
+          {/* 2. SITE HEADER: Shows on all pages EXCEPT the Vault/Studio */}
+          {!isStudioView && <Header />}
+
+          <main className="relative">
+            {children}
           </main>
         </ThemeProvider>
       </body>

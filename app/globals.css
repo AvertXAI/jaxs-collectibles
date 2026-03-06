@@ -20,6 +20,31 @@
   --jax-yellow: #FFD700;
 }
 
+body {
+  margin-top: 0;
+  transition: padding-top 0.3s ease;
+}
+
+/* --- ADMIN BRANDING COLORS --- */
+.text-admin-gold {
+  color: #D9B36C !important;
+}
+
+.text-admin-garnet {
+  color: #590202 !important;
+}
+
+.text-admin-navy {
+  color: #1B263B !important;
+}
+
+/* Force toolbar links to not inherit global black text */
+.admin-toolbar-container a,
+.admin-toolbar-container span,
+.admin-toolbar-container button {
+  color: white;
+}
+
 @layer base {
 
   html,
@@ -39,23 +64,19 @@
     transition: all 0.3s ease-in-out;
   }
 
-  /* Force Light Mode on the Auth Page and Dashboard */
   .vault-access-bg {
     @apply min-h-screen w-full flex items-center justify-center;
     background-color: var(--jax-paper) !important;
-    /* Kills the Charcoal */
   }
 
   .header-container {
     @apply max-w-[1800px] mx-auto px-6 md:px-12 py-5 flex items-center justify-between;
   }
 
-  /* 1. Logo & Text (Left) - Claims 25% space */
   .header-brand {
     @apply flex items-center gap-6 flex-1 justify-start;
   }
 
-  /* 2. Navigation (Center) - Claims 50% space and forces center */
   .header-nav {
     @apply hidden xl:flex items-center justify-center gap-12 flex-[2];
   }
@@ -64,7 +85,6 @@
     @apply text-[14px] font-black uppercase tracking-[0.25em] text-[#1B263B] transition-all duration-300 hover:text-[#590202] hover:scale-105;
   }
 
-  /* 3. Utilities (Right) - Claims 25% space */
   .header-utilities {
     @apply flex items-center gap-8 flex-1 justify-end text-[#1B263B];
   }
@@ -73,7 +93,6 @@
     @apply flex items-center gap-6 border-r border-[#D9B36C]/30 pr-8;
   }
 
-  /* --- EXISTING UI ELEMENTS --- */
   .menu-trigger {
     @apply flex items-center gap-2 bg-[var(--jax-midnight)] text-[var(--jax-cream)] px-5 py-2 rounded-full font-black text-[10px] uppercase tracking-widest shadow-lg active:scale-95 transition-all;
   }
@@ -86,7 +105,6 @@
     @apply bg-[var(--jax-red-orange)] text-white px-2 py-0.5 rounded-full text-[10px] font-bold;
   }
 
-  /* --- ADMIN DASHBOARD THEME --- */
   .admin-bg {
     background-color: var(--jax-cream);
   }
@@ -107,4 +125,72 @@ h3,
 .brand-text {
   @apply font-black italic tracking-tighter uppercase;
   line-height: 0.8;
+}
+
+/* ========================================================= */
+/* --- THE FIX: ADMIN TOOLBAR & SPACING SYSTEM ---           */
+/* ========================================================= */
+
+/* 1. ONE rule to push the body down to make room for the Toolbar */
+body:has(.admin-toolbar-container) {
+  padding-top: 40px !important;
+  margin-top: 0 !important;
+  /* Kills the duplicate math causing the massive gap */
+}
+
+/* 2. Tell the sticky site header to sit right under the 40px Toolbar */
+body:has(.admin-toolbar-container) .vault-header {
+  top: 40px !important;
+  position: sticky !important;
+}
+
+/* 3. The Toolbar itself */
+.admin-toolbar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw !important;
+  height: 40px;
+  background-color: #1B263B;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .admin-toolbar-container {
+    padding: 0 12px;
+  }
+}
+
+/* --- SANITY STUDIO LAYOUT RECOVERY --- */
+
+/* 4. Sanity needs to fill the screen minus the 40px Toolbar. No extra margins! */
+#sanity {
+  width: 100vw !important;
+  height: calc(100vh - 40px) !important;
+  margin-top: 0 !important;
+  /* Fixed: Removed the rogue margin causing the white block */
+  padding: 0 !important;
+  overflow-x: hidden !important;
+}
+
+[data-testid="studio-layout"],
+[class*="StudioLayout"],
+[class*="Workspace"] {
+  width: 100vw !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.sanity-custom-nav-wrapper {
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }

@@ -3,9 +3,9 @@ import Link from 'next/link'
 
 export function SanityNavbar(props: any) {
     return (
-        <div className="flex flex-col">
-            {/* OUR CUSTOM TOP BAR */}
-            <div className="bg-[#1B263B] text-white border-b border-white/10">
+        <div className="flex flex-col w-full">
+            {/* THE CUSTOM TOP BAR (Sits under the Admin Toolbar) */}
+            <div className="bg-[#1B263B] text-white border-b border-white/10 w-full z-[1000]">
                 <div className="flex items-center justify-between p-2 px-4">
                     <Link
                         href="/admin/dashboard"
@@ -19,7 +19,7 @@ export function SanityNavbar(props: any) {
                 </div>
             </div>
 
-            {/* THE FIX: Call the function instead of just placing the variable */}
+            {/* RENDER DEFAULT SANITY UI */}
             {props.renderDefault(props)}
         </div>
     )

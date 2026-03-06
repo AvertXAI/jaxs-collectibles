@@ -15,7 +15,7 @@ export default function Header() {
         <Link href="/" className="header-brand group">
           <div className="relative w-16 md:w-20 aspect-square">
             <NextImage
-              src="/1.png"
+              src="/logo.png"
               alt="Jax's Collectibles Logo"
               fill
               className="object-contain drop-shadow-md group-hover:scale-110 transition-transform"
