@@ -1,5 +1,5 @@
 'use client'
-import { PlusCircle, Database, LayoutDashboard, Package, Users, Settings, Flame } from 'lucide-react'
+import { PlusCircle, Database, LayoutDashboard, Package, Users, Settings, Flame, User } from 'lucide-react'
 import Link from 'next/link'
 import { AddProductForm } from '@/components/admin/add-product-form'
 
@@ -20,6 +20,18 @@ export default function AdminDashboard() {
                 <aside className="xl:col-span-1 flex flex-col gap-3">
                     <Link href="/admin/dashboard" className="flex items-center gap-4 bg-[#590202] text-white p-5 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl">
                         <LayoutDashboard size={20} /> Dashboard
+                    </Link>
+                    {/* USER MANAGEMENT LINK */}
+                    <Link href="/admin/users" className="block bg-white border border-[#D9B36C]/20 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:border-[#D9B36C] hover:-translate-y-1 transition-all group">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-full bg-[#F2EFDF] flex items-center justify-center text-[#1B263B] group-hover:bg-[#590202] group-hover:text-white transition-colors">
+                                <User size={20} />
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-black uppercase tracking-widest text-[#1B263B]">Access Control</h3>
+                                <p className="text-[10px] font-bold text-[#1B263B]/50 mt-1 uppercase tracking-widest">Manage Admin Roles & Users</p>
+                            </div>
+                        </div>
                     </Link>
                     <Link href="/admin/shop" className="flex items-center gap-4 bg-white border border-[#D9B36C]/20 hover:bg-[#F2EFDF] text-[#1B263B] p-5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all">
                         <Package size={20} /> Inventory

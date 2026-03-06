@@ -40,3 +40,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# --- VAULT ANALYTICS LOGS ---
+# Counting Lines Of Code & Tracking Tota Activity
+scripts/*.txt

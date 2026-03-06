@@ -44,8 +44,9 @@ export default function AdminToolbar() {
 
     const handleSignOut = async () => {
         await supabase.auth.signOut()
-        router.push('/')
-        router.refresh()
+        // THE FIX: Use window.location instead of router.push
+        // This forces a hard reload, completely destroying the Next.js ghost cache.
+        window.location.href = '/'
     }
 
     // THE LOCK: If still checking or not an admin, render NOTHING.

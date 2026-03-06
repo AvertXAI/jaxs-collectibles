@@ -194,3 +194,14 @@ body:has(.admin-toolbar-container) .vault-header {
   margin: 0 !important;
   padding: 0 !important;
 }
+
+/* --- PREVENT CONTENT CRUSH UNDER STICKY HEADER --- */
+main {
+  padding-top: 2rem !important;
+  /* Forces the Vault title down so the header doesn't cover it */
+}
+
+/* BUT: Disable this bumper specifically for the Sanity Studio so it stays full screen */
+body:has(#sanity) main {
+  padding-top: 0 !important;
+}
