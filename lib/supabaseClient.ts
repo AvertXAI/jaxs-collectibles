@@ -3,21 +3,15 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
-// This ensures only ONE client is created for the entire app session
-let supabaseInstance: any;
+// We use ONE variable to hold the ONE instance
+let instance: any;
 
-export const getSupabase = () => {
-    if (!supabaseInstance) {
-        supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
-            auth: {
-                persistSession: true,
-                autoRefreshToken: true,
-                detectSessionInUrl: true,
-                storageKey: 'jax-vault-auth-token' // Unique key to prevent conflicts
-            }
-        })
+export const supabase = instance || (instance = createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        // Using 'v1' here forces a fresh start for all users automatically
+        storageKey: 'jax-vault-auth-v1'
     }
-    return supabaseInstance;
-}
-
-export const supabase = getSupabase();
+}));

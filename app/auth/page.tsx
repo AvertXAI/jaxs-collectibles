@@ -13,54 +13,52 @@ export default function AuthPage() {
     const [view, setView] = useState<'signin' | 'signup'>('signin');
 
     const handleAction = async (type: 'signin' | 'signup') => {
-        const handleAction = async (type: 'signin' | 'signup') => {
-            setLoading(true);
+        setLoading(true);
 
-            // 1. Start Watchdog Timer
-            const timeout = setTimeout(() => {
-                if (loading) {
-                    setLoading(false);
-                    console.error("AUTH_TIMEOUT: Handshake failed to complete.");
-                    alert("Security handshake timed out. Please refresh and try again.");
-                }
-            }, 10000);
+        // 1. WATCHDOG TIMER: Force reset after 10 seconds of silence
+        const timeout = setTimeout(() => {
+            setLoading(false);
+            console.error("CRITICAL_TIMEOUT: The security handshake failed to respond.");
+            alert("Authentication timed out. Please clear your cache and try again.");
+        }, 10000);
 
-            try {
-                // 2. Execute Auth Action
-                const { data, error } = type === 'signup'
-                    ? await supabase.auth.signUp({
-                        email,
-                        password,
-                        options: { emailRedirectTo: `${window.location.origin}/auth/callback` }
-                    })
-                    : await supabase.auth.signInWithPassword({ email, password });
+        try {
+            const { data, error } = type === 'signup'
+                ? await supabase.auth.signUp({
+                    email,
+                    password,
+                    options: { emailRedirectTo: `${window.location.origin}/auth/callback` }
+                })
+                : await supabase.auth.signInWithPassword({ email, password });
 
-                if (error) throw error; // This jumps straight to the catch block below
+            if (error) throw error;
 
-                // 3. Clear Timer on Success
-                clearTimeout(timeout);
+            // 2. CLEAR TIMER ON SUCCESS
+            clearTimeout(timeout);
 
-                if (type === 'signup') {
-                    router.push('/auth/verify');
-                } else if (data?.user) {
-                    const { data: profile } = await supabase
-                        .from("profiles")
-                        .select("role")
-                        .eq("id", data.user.id)
-                        .single();
+            if (type === 'signup') {
+                router.push('/auth/verify');
+            } else if (data?.user) {
+                const { data: profile } = await supabase
+                    .from("profiles")
+                    .select("role")
+                    .eq("id", data.user.id)
+                    .single();
 
-                    window.location.href = (profile?.role === 'admin' || profile?.role === 'owner')
-                        ? "/admin/dashboard"
-                        : "/";
-                }
-            } catch (err: any) {
-                // 4. THE CATCH BLOCK: Final Safety Net
-                clearTimeout(timeout); // Stop the timer
-                console.error("VAULT_ACCESS_ERROR:", err.message);
-                alert(err.message);
-                setLoading(false); // Reset the button so the user can try again
+                // Direct window redirect to force-clear stale memory states
+                window.location.href = (profile?.role === 'admin' || profile?.role === 'owner')
+                    ? "/admin/dashboard"
+                    : "/";
             }
-        };
+        } catch (err: any) {
+            clearTimeout(timeout);
+            console.error("VAULT_ACCESS_ERROR:", err.message);
+            alert(err.message);
+        } finally {
+            // 3. FINAL RESET: Always kill loading state on completion or error
+            setLoading(false);
+        }
+    };
 
     return (
         <main className="min-h-screen bg-[#F2EFDF] text-[#1B263B] font-sans selection:bg-[#590202] selection:text-white">
@@ -126,4 +124,4 @@ export default function AuthPage() {
             </footer>
         </main>
     );
-}}
+}
