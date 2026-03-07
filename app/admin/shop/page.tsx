@@ -1,11 +1,16 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { groq } from "next-sanity"
-import { client } from "@/_sanity_archive/lib/client"
+import { createClient } from '@supabase/supabase-js'
 import { Edit2, Trash2, ExternalLink, ShieldCheck } from 'lucide-react'
 import Link from 'next/link'
-import NextImage from 'next/image' // Renamed to fix JSX conflict
+import NextImage from 'next/image'
 import EditProductModal from '@/components/admin/edit-product-modal'
+
+// Supabase Init
+const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
 export default function AdminShopManager() {
     const [products, setProducts] = useState<any[]>([])
@@ -14,19 +19,20 @@ export default function AdminShopManager() {
 
     useEffect(() => {
         async function fetchProducts() {
-            const data = await client.fetch(
-                groq`*[_type == "product"] | order(_createdAt desc) {
-                    _id,
-                    name,
-                    "slug": slug.current,
-                    price,
-                    "imageUrl": images[0].asset->url,
-                    category,
-                    coa
-                }`
-            );
-            setProducts(data);
-            setLoading(false);
+            try {
+                // FETCHING FROM SUPABASE
+                const { data, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                setProducts(data || []);
+            } catch (error) {
+                console.error("Vault retrieval error:", error);
+            } finally {
+                setLoading(false);
+            }
         }
         fetchProducts();
     }, [])
@@ -42,7 +48,8 @@ export default function AdminShopManager() {
                 });
 
                 if (response.ok) {
-                    setProducts(products.filter(p => p._id !== id));
+                    // Update the list by matching 'id' instead of '_id'
+                    setProducts(products.filter(p => p.id !== id));
                     alert("Asset purged successfully.");
                 } else {
                     alert("Failed to purge asset. Check console.");
@@ -80,11 +87,18 @@ export default function AdminShopManager() {
                     </thead>
                     <tbody className="text-[12px] font-bold text-[#1B263B]">
                         {products.map((product) => (
-                            <tr key={product._id} className="border-b border-[#D9B36C]/10 hover:bg-[#F2EFDF]/30 transition-colors group">
+                            <tr key={product.id} className="border-b border-[#D9B36C]/10 hover:bg-[#F2EFDF]/30 transition-colors group">
                                 <td className="p-4">
                                     <div className="w-16 h-16 bg-[#F2EFDF] rounded-xl overflow-hidden relative border border-[#D9B36C]/20">
-                                        {product.imageUrl && (
-                                            <NextImage src={product.imageUrl} alt={product.name} fill className="object-cover" />
+                                        {/* Handling fallback for existing images or new Supabase array */}
+                                        {(product.images?.[0] || product.image_url) && (
+                                            <NextImage
+                                                src={product.images?.[0] || product.image_url}
+                                                alt={product.name}
+                                                fill
+                                                sizes="64px"
+                                                className="object-cover"
+                                            />
                                         )}
                                     </div>
                                 </td>
@@ -94,10 +108,10 @@ export default function AdminShopManager() {
                                             <span className="font-black uppercase">{product.name}</span>
                                             {product.coa?.verified && <ShieldCheck size={14} className="text-emerald-600" />}
                                         </div>
-                                        <span className="text-[9px] text-[#1B263B]/40 uppercase tracking-tighter font-black">ID: {product._id.slice(0, 8)}...</span>
+                                        <span className="text-[9px] text-[#1B263B]/40 uppercase tracking-tighter font-black">ID: {product.id.slice(0, 8)}...</span>
                                     </div>
                                 </td>
-                                <td className="p-6 uppercase text-[#D9B36C] tracking-widest text-[10px]">{product.category}</td>
+                                <td className="p-6 uppercase text-[#D9B36C] tracking-widest text-[10px]">{product.category || 'General'}</td>
                                 <td className="p-6 font-black text-[#590202]">${product.price}</td>
                                 <td className="p-6 text-right">
                                     <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -108,7 +122,7 @@ export default function AdminShopManager() {
                                             <Edit2 size={16} />
                                         </button>
                                         <button
-                                            onClick={() => handleDelete(product._id, product.name)}
+                                            onClick={() => handleDelete(product.id, product.name)}
                                             className="p-2 bg-[#F2EFDF] text-[#590202] rounded-lg hover:bg-[#590202] hover:text-white transition-all"
                                         >
                                             <Trash2 size={16} />
@@ -120,14 +134,14 @@ export default function AdminShopManager() {
                     </tbody>
                 </table>
             </div>
-            {/* --- EDIT MODAL OVERLAY --- */}
+
             {editingProduct && (
                 <EditProductModal
                     product={editingProduct}
                     onClose={() => setEditingProduct(null)}
                     onUpdate={(updated) => {
-                        // This updates the list instantly without a refresh
-                        setProducts(products.map(p => p._id === updated._id ? updated : p))
+                        // Updates list using 'id'
+                        setProducts(products.map(p => p.id === updated.id ? updated : p))
                     }}
                 />
             )}
