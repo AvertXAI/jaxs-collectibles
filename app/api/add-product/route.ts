@@ -1,55 +1,74 @@
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
 import { NextResponse } from "next/server";
-import { createClient } from "next-sanity";
-
-const adminClient = createClient({
-    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
-    apiVersion: "2024-03-01",
-    token: process.env.SANITY_API_TOKEN,
-    useCdn: false,
-});
 
 export async function POST(request: Request) {
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+            cookies: {
+                getAll() { return cookieStore.getAll() },
+                setAll(cookiesToSet) {
+                    cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options))
+                },
+            },
+        }
+    )
+
     try {
         const formData = await request.formData();
-
-        // 1. Grab the image file from the request
         const file = formData.get("image") as File;
-        let imageAsset;
+        let publicUrl = "";
 
+        // 1. UPLOAD TO SUPABASE STORAGE
         if (file) {
-            // 2. Upload the file to Sanity first to get an Asset ID
-            imageAsset = await adminClient.assets.upload("image", file, {
-                filename: file.name,
-            });
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Math.random()}.${fileExt}`;
+            const filePath = `products/${fileName}`;
+
+            const { data: uploadData, error: uploadError } = await supabase.storage
+                .from('vault-assets')
+                .upload(filePath, file);
+
+            if (uploadError) throw uploadError;
+
+            // 2. GET PUBLIC URL
+            const { data: urlData } = supabase.storage
+                .from('vault-assets')
+                .getPublicUrl(filePath);
+
+            publicUrl = urlData.publicUrl;
         }
 
-        // 3. Create the actual Product document
-        const result = await adminClient.create({
-            _type: "product",
-            name: formData.get("name") as string,
-            slug: {
-                _type: "slug",
-                current: (formData.get("name") as string).toLowerCase().replace(/\s+/g, "-")
-            },
-            itemNumber: formData.get("itemNumber") as string,
-            category: formData.get("category") as string,
-            description: formData.get("description") as string,
-            price: parseFloat(formData.get("price") as string) || 0,
-            stock: parseInt(formData.get("stock") as string) || 1,
-            notes: formData.get("notes") as string,
-            tags: (formData.get("tags") as string)?.split(",").map(t => t.trim()) || [],
-            // Link the image we just uploaded
-            images: imageAsset ? [{
-                _key: Math.random().toString(36).substring(2),
-                _type: "image",
-                asset: { _ref: imageAsset._id }
-            }] : [],
-        });
+        // 3. INSERT INTO POSTGRESQL
+        const name = formData.get("name") as string;
+        const slug = name.toLowerCase().replace(/\s+/g, "-");
 
-        return NextResponse.json({ success: true, id: result._id });
-    } catch (error) {
-        console.error("Sanity Upload Error:", error);
-        return NextResponse.json({ success: false, error: "Failed to upload to Vault" }, { status: 500 });
+        const { data, error } = await supabase
+            .from('products')
+            .insert([{
+                name: name,
+                slug: slug,
+                item_number: formData.get("itemNumber"),
+                category: formData.get("category"), // Matches your current text column
+                description: formData.get("description"),
+                price: parseFloat(formData.get("price") as string) || 0,
+                stock: parseInt(formData.get("stock") as string) || 0,
+                notes: formData.get("notes"),
+                tags: (formData.get("tags") as string)?.split(",").map(t => t.trim()) || [],
+                images: publicUrl ? [publicUrl] : [], // Array for future multiple images
+                coa: { verified: true, id: "", authenticator: "" } // Default COA object
+            }])
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        return NextResponse.json({ success: true, id: data.id });
+    } catch (error: any) {
+        console.error("Vault Upload Error:", error);
+        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 }
