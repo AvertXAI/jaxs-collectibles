@@ -77,14 +77,6 @@ export default function AdminToolbar() {
                     </Link>
                 </div>
             </div>
-
-            <div className="flex items-center gap-6">
-                {!isStudio && (
-                    <Link href="/vault" className="text-[9px] font-black uppercase tracking-widest text-white/80 hover:text-[#D9B36C] flex items-center gap-2 transition-colors">
-                        <Layout size={12} /> Open Sanity Studio
-                    </Link>
-                )}
-
                 <button
                     onClick={handleSignOut}
                     className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-[#590202] hover:text-white transition-all bg-[#590202]/10 hover:bg-[#590202] px-3 py-1 rounded-md"
@@ -92,6 +84,5 @@ export default function AdminToolbar() {
                     <LogOut size={12} /> Sign Out
                 </button>
             </div>
-        </div>
     )
 }

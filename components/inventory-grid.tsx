@@ -1,13 +1,11 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { createClient } from '@supabase/supabase-js'
-import { groq } from "next-sanity";
-import { client } from "@/_sanity_archive/lib/client";
 import Image from "next/image";
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
 
-// Supabase Init (Kept as requested)
+// Supabase Init
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -20,21 +18,16 @@ export default function InventoryGrid() {
     useEffect(() => {
         async function fetchProducts() {
             try {
-                // Fetching from Sanity as in your original code
-                const data = await client.fetch(
-                    groq`*[_type == "product"] | order(_createdAt desc) {
-                        _id,
-                        name,
-                        "slug": slug.current,
-                        price,
-                        "imageUrl": images[0].asset->url,
-                        category,
-                        coa
-                    }`
-                );
-                setProducts(data);
+                // FETCHING FROM SUPABASE INSTEAD OF SANITY
+                const { data, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                setProducts(data || []);
             } catch (error) {
-                console.error("Sanity fetch error:", error);
+                console.error("Supabase fetch error:", error);
             } finally {
                 setLoading(false);
             }
@@ -50,11 +43,11 @@ export default function InventoryGrid() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
             {products.map((product: any) => (
                 <Link
-                    key={product._id}
+                    key={product.id}
                     href={`/shop/${product.slug}`}
                     className="group block bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800 hover:border-zinc-700 transition-all relative"
                 >
-                    {/* VERIFIED BADGE - Shows if coa.verified is true in Sanity */}
+                    {/* VERIFIED BADGE - Reading from Supabase JSONB 'coa' object */}
                     {product.coa?.verified && (
                         <div className="absolute top-2 left-2 z-10 bg-black/60 backdrop-blur-md border border-emerald-500/50 p-1 rounded-md flex items-center gap-1">
                             <ShieldCheck size={12} className="text-emerald-500" />
@@ -63,11 +56,13 @@ export default function InventoryGrid() {
                     )}
 
                     <div className="aspect-square relative overflow-hidden bg-zinc-800">
-                        {product.imageUrl ? (
+                        {/* Logic handles your old 'image_url' or the new 'images' array */}
+                        {(product.images?.[0] || product.image_url) ? (
                             <Image
-                                src={product.imageUrl}
+                                src={product.images?.[0] || product.image_url}
                                 alt={product.name}
                                 fill
+                                sizes="(max-width: 768px) 50vw, 25vw"
                                 className="object-cover group-hover:scale-110 transition-transform duration-300"
                             />
                         ) : (
@@ -78,7 +73,8 @@ export default function InventoryGrid() {
                     <div className="p-3">
                         <h3 className="text-sm font-medium text-zinc-100 truncate">{product.name}</h3>
                         <div className="flex justify-between items-center mt-1">
-                            <span className="text-xs text-zinc-500 uppercase tracking-widest">{product.category}</span>
+                            {/* Uses the fallback text category until we link the new category_id */}
+                            <span className="text-xs text-zinc-500 uppercase tracking-widest">{product.category || 'General'}</span>
                             <span className="text-sm font-bold text-green-400">${product.price}</span>
                         </div>
                     </div>
