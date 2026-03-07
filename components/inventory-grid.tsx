@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { groq } from "next-sanity";
-import { client } from "@/sanity/lib/client";
+import { client } from "@/_sanity_archive/lib/client";
 import Image from "next/image";
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";

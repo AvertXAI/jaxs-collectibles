@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { adminClient } from '@/sanity/lib/client'
+import { adminClient } from '@/_sanity_archive/lib/client'
 
 // --- PATCH: UPDATE PRODUCT DETAILS ---
 export async function PATCH(

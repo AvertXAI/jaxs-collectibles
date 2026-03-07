@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { groq } from "next-sanity";
-import { client } from "@/sanity/lib/client";
+import { client } from "@/_sanity_archive/lib/client";
 import Image from "next/image";
 
 // Force Next.js to treat this as a dynamic route

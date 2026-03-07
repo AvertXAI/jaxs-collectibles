@@ -6,9 +6,9 @@ import { SanityNavbar } from './components/sanity-navbar'
 import { structureTool } from 'sanity/structure'
 
 // Go to https://www.sanity.io/docs/api-versioning to learn how API versioning works
-import { apiVersion, dataset, projectId} from './sanity/env'
-import { schemaTypes } from './sanity/schemaTypes'
-import { structure } from './sanity/structure'
+import { apiVersion, dataset, projectId } from './_sanity_archive/env'
+import { schemaTypes } from './_sanity_archive/schemaTypes'
+import { structure } from './_sanity_archive/structure'
 
 
 export default defineConfig({
@@ -24,7 +24,7 @@ export default defineConfig({
   },
 
   plugins: [
-    structureTool({structure}),
+    structureTool({ structure }),
     // Vision is for querying with GROQ from inside the Studio
     // https://www.sanity.io/docs/the-vision-plugin
     visionTool({ defaultApiVersion: apiVersion }),

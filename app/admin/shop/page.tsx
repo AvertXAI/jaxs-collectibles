@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { groq } from "next-sanity"
-import { client } from "@/sanity/lib/client"
+import { client } from "@/_sanity_archive/lib/client"
 import { Edit2, Trash2, ExternalLink, ShieldCheck } from 'lucide-react'
 import Link from 'next/link'
 import NextImage from 'next/image' // Renamed to fix JSX conflict

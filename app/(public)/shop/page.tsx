@@ -9,7 +9,7 @@ import ShopGrid from '@/components/shop-grid';
 import InventoryGrid from "@/components/inventory-grid";
 import ProductCard from "@/components/product-card";
 import { groq } from "next-sanity";
-import { client } from "@/sanity/lib/client";
+import { client } from "@/_sanity_archive/lib/client";
 
 export default function Home() {
   const [showModal, setShowModal] = useState(true);
@@ -42,7 +42,7 @@ export default function Home() {
     <main className="min-h-screen bg-[#F2EFDF] text-[#1B263B] font-sans selection:bg-[#590202] selection:text-white">
 
       {/* 1. BRAND NEW MOBILE-FRIENDLY NAVBAR */}
-{/*       <Navbar />
+      {/*       <Navbar />
  */}
       {/* 2. EMAIL CAPTURE MODAL */}
       {showModal && (

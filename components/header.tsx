@@ -13,11 +13,12 @@ export default function Header() {
 
         {/* 1. LEFT: THE LOGO + TEXT (Uses .header-brand for flex-1) */}
         <Link href="/" className="header-brand group">
-          <div className="relative w-16 md:w-20 aspect-square">
+          <div className="relative w-16 md:w-20 md:h-20 spect-square">
             <NextImage
               src="/logo.png"
               alt="Jax's Collectibles Logo"
               fill
+              sizes="(max-width: 768px) 128px, 160px"
               className="object-contain drop-shadow-md group-hover:scale-110 transition-transform"
               priority
             />
