@@ -1,51 +1,64 @@
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
-import { adminClient } from '@/_sanity_archive/lib/client'
 
-// --- PATCH: UPDATE PRODUCT DETAILS ---
 export async function PATCH(
     request: Request,
-    { params }: { params: Promise<{ id: string }> } // FIXED: params is now a Promise
+    { params }: { params: Promise<{ id: string }> }
 ) {
-    // RESOLVE THE PARAMS
-    const resolvedParams = await params;
-    const id = resolvedParams.id;
+    const { id } = await params;
+    const body = await request.json();
+    const cookieStore = await cookies();
 
-    const body = await request.json()
+    const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+            cookies: {
+                getAll() { return cookieStore.getAll() },
+                setAll(cookiesToSet) {
+                    cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options))
+                },
+            },
+        }
+    )
 
-    try {
-        if (!id) return NextResponse.json({ error: "Missing ID" }, { status: 400 })
+    const { data, error } = await supabase
+        .from('products')
+        .update({
+            name: body.name,
+            price: body.price,
+            // We'll update category logic once we map your new IDs
+        })
+        .eq('id', id)
+        .select()
 
-        const result = await adminClient
-            .patch(id)
-            .set({
-                name: body.name,
-                price: body.price,
-                category: body.category
-            })
-            .commit()
-
-        return NextResponse.json({ message: "Asset refined in the Vault", result })
-    } catch (error) {
-        console.error('Update Error:', error)
-        return NextResponse.json({ error: "Failed to refine asset" }, { status: 500 })
-    }
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ message: "Asset refined in the Vault", result: data });
 }
 
-// --- DELETE: PURGE PRODUCT ---
 export async function DELETE(
     request: Request,
-    { params }: { params: Promise<{ id: string }> } // FIXED: params is now a Promise
+    { params }: { params: Promise<{ id: string }> }
 ) {
-    // RESOLVE THE PARAMS
-    const resolvedParams = await params;
-    const id = resolvedParams.id;
+    const { id } = await params;
+    const cookieStore = await cookies();
 
-    try {
-        if (!id) return NextResponse.json({ error: "Missing ID" }, { status: 400 })
+    const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+            cookies: {
+                getAll() { return cookieStore.getAll() },
+                setAll(cookiesToSet) {
+                    cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options))
+                },
+            },
+        }
+    )
 
-        await adminClient.delete(id)
-        return NextResponse.json({ message: `Asset ${id} successfully purged` })
-    } catch (error) {
-        return NextResponse.json({ error: "Purge failed" }, { status: 500 })
-    }
+    const { error } = await supabase.from('products').delete().eq('id', id);
+
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ message: `Asset ${id} successfully purged` });
 }
