@@ -20,7 +20,8 @@ export default function AuthPage() {
                 email,
                 password,
                 // THE FIX: This tells Supabase where to send the user after clicking the email link
-                options: { emailRedirectTo: `${window.location.origin}/auth/callback` }
+                options: { emailRedirectTo: `${window.location.origin}/auth/callback`,
+                data: { full_name: "New Prospect" } }
             })
             : await supabase.auth.signInWithPassword({ email, password });
 
