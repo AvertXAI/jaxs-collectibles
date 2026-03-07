@@ -15,11 +15,13 @@ export default function AuthPage() {
     const handleAction = async (type: 'signin' | 'signup') => {
         setLoading(true);
 
-        // 1. WATCHDOG TIMER: Force reset after 10 seconds of silence
+        // 1. WATCHDOG TIMER: Prevents the 10-second hang you saw earlier
         const timeout = setTimeout(() => {
-            setLoading(false);
-            console.error("CRITICAL_TIMEOUT: The security handshake failed to respond.");
-            alert("Authentication timed out. Please clear your cache and try again.");
+            if (loading) {
+                setLoading(false);
+                console.error("AUTH_TIMEOUT: The Vault failed to respond.");
+                alert("Security handshake timed out. Please refresh and try again.");
+            }
         }, 10000);
 
         try {
@@ -33,29 +35,30 @@ export default function AuthPage() {
 
             if (error) throw error;
 
-            // 2. CLEAR TIMER ON SUCCESS
+            // 2. SUCCESS: Kill the timer
             clearTimeout(timeout);
 
             if (type === 'signup') {
                 router.push('/auth/verify');
             } else if (data?.user) {
+                // Check role for automatic dashboard redirect
                 const { data: profile } = await supabase
                     .from("profiles")
                     .select("role")
                     .eq("id", data.user.id)
                     .single();
 
-                // Direct window redirect to force-clear stale memory states
-                window.location.href = (profile?.role === 'admin' || profile?.role === 'owner')
-                    ? "/admin/dashboard"
-                    : "/";
+                // 3. THE FIX: Send Owner/Admin to dashboard, others to Home
+                const hasClearance = profile?.role === 'admin' || profile?.role === 'owner';
+
+                // We use window.location.href for a clean state flush on login
+                window.location.href = hasClearance ? "/admin/dashboard" : "/";
             }
         } catch (err: any) {
             clearTimeout(timeout);
             console.error("VAULT_ACCESS_ERROR:", err.message);
             alert(err.message);
         } finally {
-            // 3. FINAL RESET: Always kill loading state on completion or error
             setLoading(false);
         }
     };

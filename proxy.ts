@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-// THE FIX: Renamed the core function from 'middleware' to 'proxy'
+// THE FIX: Function name MUST be 'proxy' to match the filename in Next.js 16
 export async function proxy(request: NextRequest) {
     let response = NextResponse.next({
         request: { headers: request.headers },
@@ -37,7 +37,9 @@ export async function proxy(request: NextRequest) {
             .single()
 
         // GOD MODE & ADMIN ACCESS
-        if (profile?.role !== 'admin' && profile?.role !== 'owner') {
+        const hasClearance = profile?.role === 'admin' || profile?.role === 'owner';
+
+        if (!hasClearance) {
             return NextResponse.redirect(new URL('/', request.url))
         }
     }
@@ -45,7 +47,6 @@ export async function proxy(request: NextRequest) {
     return response
 }
 
-// Keep the matcher exact so it only guards the Admin/Vault routes
 export const config = {
     matcher: ['/admin/:path*'],
 }

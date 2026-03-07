@@ -1,34 +1,46 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { createBrowserClient } from '@supabase/ssr'
-import { ShieldCheck, User, ArrowLeft } from 'lucide-react'
+import { supabase } from '@/lib/supabaseClient' // SINGLETON CLIENT
+import { ShieldCheck, User, ArrowLeft, Crown, ShieldAlert } from 'lucide-react'
 import Link from 'next/link'
 
 export default function UserManagement() {
     const [profiles, setProfiles] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
-
-    const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    )
+    const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
         fetchProfiles()
     }, [])
 
     const fetchProfiles = async () => {
-        const { data, error } = await supabase.from('profiles').select('*')
-        if (data) setProfiles(data)
-        setLoading(false)
+        setLoading(true)
+        try {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .order('role', { ascending: false }) // Owner/Admin first
+
+            if (error) throw error
+            if (data) setProfiles(data)
+        } catch (err: any) {
+            setError(err.message)
+            console.error("VAULT_FETCH_ERROR:", err.message)
+        } finally {
+            setLoading(false)
+        }
     }
 
     const toggleRole = async (profileId: string, currentRole: string, email: string) => {
-        const newRole = currentRole === 'admin' ? 'user' : 'admin'
+        // GOD MODE PROTECTION: UI cannot modify Owner rank
+        if (currentRole === 'owner') {
+            alert("SECURITY VIOLATION: Owner rank is immutable via standard UI.")
+            return
+        }
 
-        // THE SAFETY PROMPT
+        const newRole = currentRole === 'admin' ? 'user' : 'admin'
         const confirmed = window.confirm(
-            `Are you sure you want to make "${email || 'this user'}" an ${newRole.toUpperCase()}?`
+            `CONFIRM RANK SHIFT: Change "${email}" to ${newRole.toUpperCase()}?`
         )
 
         if (confirmed) {
@@ -40,17 +52,23 @@ export default function UserManagement() {
 
                 if (error) throw error
 
-                // Update local UI state
                 setProfiles(profiles.map(p => p.id === profileId ? { ...p, role: newRole } : p))
-                alert(`User is now an ${newRole.toUpperCase()}`)
-            } catch (error: any) {
-                alert("Error updating role. Check RLS policies.")
-                console.error(error)
+            } catch (err: any) {
+                alert("UPDATE FAILED: Check RLS Policies.")
+                console.error(err)
             }
         }
     }
 
-    if (loading) return <div className="p-20 text-center font-black animate-pulse text-[#590202]">SCANNING PROFILES...</div>
+    if (loading) return <div className="p-20 text-center font-black animate-pulse text-[#590202] tracking-[0.5em]">SCANNING PROFILES...</div>
+
+    if (error) return (
+        <div className="p-20 text-center text-[#590202]">
+            <ShieldAlert className="mx-auto mb-4" size={48} />
+            <h2 className="font-black uppercase tracking-widest">Access Denied / Network Error</h2>
+            <p className="text-xs mt-2 opacity-60">{error}</p>
+        </div>
+    )
 
     return (
         <main className="min-h-screen bg-[#F2EFDF] p-8 md:p-12">
@@ -80,22 +98,26 @@ export default function UserManagement() {
                                 <td className="p-6 text-[10px] font-mono text-[#1B263B]/50">{profile.id.slice(0, 12)}...</td>
                                 <td className="p-6">{profile.email || "No Email Provided"}</td>
                                 <td className="p-6">
-                                    {profile.role === 'admin' ? (
-                                        <span className="flex items-center gap-2 text-emerald-600"><ShieldCheck size={14} /> ADMIN</span>
+                                    {profile.role === 'owner' ? (
+                                        <span className="flex items-center gap-2 text-[#590202] font-black"><Crown size={14} /> OWNER (GOD MODE)</span>
+                                    ) : profile.role === 'admin' ? (
+                                        <span className="flex items-center gap-2 text-emerald-600 font-black"><ShieldCheck size={14} /> ADMIN</span>
                                     ) : (
-                                        <span className="flex items-center gap-2 text-[#1B263B]/60"><User size={14} /> USER</span>
+                                        <span className="flex items-center gap-2 text-[#1B263B]/60 font-black"><User size={14} /> USER</span>
                                     )}
                                 </td>
                                 <td className="p-6 text-right">
-                                    <button
-                                        onClick={() => toggleRole(profile.id, profile.role, profile.email)}
-                                        className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${profile.role === 'admin'
-                                                ? 'bg-red-500/10 text-red-600 hover:bg-red-500 hover:text-white'
-                                                : 'bg-[#D9B36C]/20 text-[#1B263B] hover:bg-[#D9B36C] hover:text-black'
-                                            }`}
-                                    >
-                                        {profile.role === 'admin' ? 'Revoke Admin' : 'Make Admin'}
-                                    </button>
+                                    {profile.role !== 'owner' && (
+                                        <button
+                                            onClick={() => toggleRole(profile.id, profile.role, profile.email)}
+                                            className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${profile.role === 'admin'
+                                                    ? 'bg-red-500/10 text-red-600 hover:bg-red-500 hover:text-white'
+                                                    : 'bg-[#D9B36C]/20 text-[#1B263B] hover:bg-[#D9B36C] hover:text-black'
+                                                }`}
+                                        >
+                                            {profile.role === 'admin' ? 'Revoke Admin' : 'Make Admin'}
+                                        </button>
+                                    )}
                                 </td>
                             </tr>
                         ))}
