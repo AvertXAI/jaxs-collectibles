@@ -1,8 +1,10 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+import { supabase } from '@/lib/supabaseClient'
 import "./globals.css";
 import Header from "@/components/header";
 import AdminToolbar from "@/components/admin-toolbar";
@@ -19,13 +21,33 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
+  const [role, setRole] = useState<string | null>(null)
 
-  // LOGIC: Only hide the header if we are exactly in the Studio/Vault paths
-  // This ensures the header shows on /shop, /cart, and the Home page.
+  useEffect(() => {
+    async function getRole() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single()
+        setRole(data?.role || 'user')
+      } else {
+        setRole(null)
+      }
+    }
+    getRole()
+
+    // Listen for auth changes (login/logout) to update the toolbar instantly
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => getRole())
+    return () => subscription.unsubscribe()
+  }, [])
+
   const isStudioView = pathname.startsWith('/vault') || pathname.startsWith('/studio');
 
-  // ADMIN AUTH: Set this to true to see the toolbar during dev
-  const showAdminToolbar = true;
+  // THE FIX: Toolbar only shows for 'admin' or 'owner'
+  const showAdminToolbar = role === 'admin' || role === 'owner';
 
   return (
     <html lang="en" className="light" style={{ colorScheme: 'light' }}>
@@ -37,10 +59,8 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
-          {/* 1. ADMIN TOOLBAR: Stays at the absolute top */}
           {showAdminToolbar && <AdminToolbar />}
 
-          {/* 2. SITE HEADER: Shows on all pages EXCEPT the Vault/Studio */}
           {!isStudioView && <Header />}
 
           <main className="relative">
