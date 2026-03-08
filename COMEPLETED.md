@@ -41,7 +41,44 @@
 - [x] **Security Gating:** "Add New Address" protocol now performs active session checks for authorized identities.
 
 ---
-## ⚡ Next Targeted Phase: Phase 24
-- [ ] Wire Supabase `addresses` table to the Checkout gateway.
-- [ ] Finalize "Go to Cart" state persistence on page refreshes.
-- [ ] Deploy the "Blog / Ledger" Authenticity system.
+# Jax's Collectibles - Master Deployment Ledger
+**Lead Architect:** Jason Cruz
+**Current TOP:** 221.0 Hours
+**Date:** March 8, 2026
+
+## 🛡️ BLOCK I-V: Foundation & Intelligence (Completed)
+- [x] **Storefront Grid:** Implemented 8-item grid (4 top / 4 bottom) with Supabase live-data hydration.
+- [x] **Intelligence Search:** Re-engineered search brain to remain hidden until keyword entry.
+- [x] **The Asset Closer:** Dynamic product detail page with multi-image thumbnail reel.
+- [x] **Scarcity Protocol:** Conditional UI logic for "1-of-1" items vs multi-stock items.
+- [x] **FAQ Dashboard:** Fully operational Admin UI with visible Edit/Purge controls.
+- [x] **Session Guard:** Implemented idle-timeout and tab-away security protocols for Admin routes.
+
+## 🧠 BLOCK VI: The Brain (Central Cortex Architecture) (Completed)
+- [x] **Database Cortex:** Established `cortex.ts` and `adminCortex.ts` for standardized, secure Supabase SSR connections.
+- [x] **Error & Logging Tax:** Implemented custom `BrainError` class and `logger.ts`.
+- [x] **Mechanic Modularization:** Decoupled standard API routes into dedicated Brain Mechanics:
+  - `seedMechanic.ts` (Data & Tax Injection)
+  - `purgeMechanic.ts` (God-Mode Wipe)
+  - `uploadMechanic.ts` (Storage & Asset Registry)
+  - `customerMechanic.ts` (CRM & Filtering)
+  - `faqMechanic.ts` (Intelligence Retrieval)
+
+## 🛒 BLOCK VII: Server-Synced Fulfillment (The Cart) (Completed)
+- [x] **Phase 24: Cart & Address SQL:** Constructed `carts`, `cart_items`, `tax_rates`, and `addresses` ledgers in Supabase with RLS.
+- [x] **Phase 25: Sync Mechanics:** Built `syncMechanic.ts`, `addressMechanic.ts`, and `taxMechanic.ts` for database operations.
+- [x] **Phase 26: Context Rewiring:** Refactored `CartContext.tsx` to handle Optimistic UI updates with background Supabase syncing.
+- [x] **Phase 27: Cart View:** Built the slide-out vault and dedicated full-page retail cart.
+- [x] **Phase 28: Order Summary Math & Progressive Gateway:** - Deployed "Address First, Payment Second" progressive disclosure at Checkout.
+  - Integrated 50-State Tax Database Seeder.
+  - Implemented dynamic tax calculation based on destination sourcing.
+  - Added 3D Secure (3DS) Trust Badges (Verified by Visa, Mastercard Identity Check) to the payment lock.
+
+---
+
+## ⚡ NEXT TARGETED PHASES (Pending)
+### 📦 BLOCK VIII: Logistics & Operations
+- [ ] **Phase 29:** Build the Admin Shipping Control Panel (`app/admin/shipping/page.tsx`) to globally adjust the $25.00 shipping variable.
+- [ ] **Phase 30:** Wire up actual Stripe Payment Intents and Elements to the Checkout Gateway.
+- [ ] **Phase 31:** Construct the "Blog / Ledger" Authenticity system.
+- [ ] **Phase 32:** Final RLS (Row Level Security) Audit.
