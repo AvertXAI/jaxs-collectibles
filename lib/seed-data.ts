@@ -1,4 +1,5 @@
-export const seedProducts = [
+// Base data array
+const rawSeedData = [
     { name: 'Shadowflare Dragon (Holographic)', category: 'cards', availability: 'available', price: 299.99, stock: 5, description: 'Rare holographic shadow-type dragon from the First Awakening set.' },
     { name: 'Midnight Specter #1 (First Edition)', category: 'comics', availability: 'vaulted', price: 1250.00, stock: 1, description: 'The debut of the Specter. Mint condition (CGC 9.8).' },
     { name: 'Iron Sentinel: Mark IV Statue', category: 'figures', availability: 'pre-order', price: 450.00, stock: 10, description: 'Hand-painted 1/4 scale resin statue with LED functions.' },
@@ -50,3 +51,14 @@ export const seedProducts = [
     { name: 'The Dark Knight: Cape Clip', category: 'memorabilia', availability: 'available', price: 25.00, stock: 50, description: 'Replica utility clip from the superhero suit.' },
     { name: 'Mythic Quest #500 (Finale)', category: 'comics', availability: 'sold-out', price: 19.99, stock: 0, description: 'Oversized final issue of the decade-long quest.' }
 ];
+
+// Automatically inject random placeholder images for all 50 items
+export const seedProducts = rawSeedData.map((item, index) => {
+    return {
+        ...item,
+        slug: item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
+        // Using Picsum to generate a unique 800x1000 image for each item
+        images: [`https://picsum.photos/seed/jaxvault${index}/800/1000`],
+        coa: { verified: Math.random() > 0.5, id: `COA-${Math.floor(Math.random() * 10000)}`, authenticator: "Vault Auth" }
+    }
+});

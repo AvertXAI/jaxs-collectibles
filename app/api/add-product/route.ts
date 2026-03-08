@@ -1,4 +1,4 @@
-import { createServerClient } from '@supabase/ssr'
+/* import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextResponse } from "next/server";
 
@@ -70,5 +70,36 @@ export async function POST(request: Request) {
     } catch (error: any) {
         console.error("Vault Upload Error:", error);
         return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    }
+} */
+
+// REFACTORED TO DELEGATE TO THE BRAIN FOR BETTER SEPARATION OF CONCERNS AND ERROR HANDLING TAX ENFORCEMENT. SEE /brain/products/uploadMechanic.ts FOR THE NEW LOGIC.
+
+import { NextResponse } from "next/server";
+import { executeProductUpload } from "@/brain/products/uploadMechanic";
+import { logBrainFailure } from "@/brain/logger";
+import { BrainError } from "@/brain/errors";
+
+export async function POST(request: Request) {
+    try {
+        const formData = await request.formData();
+
+        // Pass the request directly to the Brain
+        const result = await executeProductUpload(formData);
+
+        return NextResponse.json({ success: true, ...result });
+
+    } catch (error: any) {
+        // Enforce the Logging Tax
+        logBrainFailure(error);
+
+        const status = error instanceof BrainError ? error.statusCode : 500;
+        const source = error instanceof BrainError ? error.source : "UNKNOWN_CORTEX";
+
+        return NextResponse.json({
+            success: false,
+            error: error.message || "Internal Brain Failure",
+            origin: source
+        }, { status });
     }
 }

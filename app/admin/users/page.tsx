@@ -38,24 +38,33 @@ export default function UserManagement() {
             return
         }
 
-        const newRole = currentRole === 'admin' ? 'user' : 'admin'
+        const newRole = currentRole === 'admin' ? 'user' : 'admin';
         const confirmed = window.confirm(
             `CONFIRM RANK SHIFT: Change "${email}" to ${newRole.toUpperCase()}?`
-        )
+        );
 
         if (confirmed) {
             try {
-                const { error } = await supabase
+                // EXPLICIT UPDATE: Using the singleton client
+                const { data, error } = await supabase
                     .from('profiles')
                     .update({ role: newRole })
                     .eq('id', profileId)
+                    .select(); // Ask for data back to confirm it hit the DB
 
-                if (error) throw error
+                if (error) {
+                    console.error("DB_REJECTED:", error.message);
+                    throw error;
+                }
 
-                setProfiles(profiles.map(p => p.id === profileId ? { ...p, role: newRole } : p))
+                if (data && data.length > 0) {
+                    // Sync UI only AFTER DB confirms success
+                    setProfiles(profiles.map(p => p.id === profileId ? { ...p, role: newRole } : p));
+                    alert(`Vault Rank Updated: ${newRole.toUpperCase()}`);
+                }
             } catch (err: any) {
-                alert("UPDATE FAILED: Check RLS Policies.")
-                console.error(err)
+                alert(`UPDATE FAILED: Check Supabase RLS policies.`);
+                console.error("ROLE_UPDATE_ERROR:", err);
             }
         }
     }
@@ -111,8 +120,8 @@ export default function UserManagement() {
                                         <button
                                             onClick={() => toggleRole(profile.id, profile.role, profile.email)}
                                             className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${profile.role === 'admin'
-                                                    ? 'bg-red-500/10 text-red-600 hover:bg-red-500 hover:text-white'
-                                                    : 'bg-[#D9B36C]/20 text-[#1B263B] hover:bg-[#D9B36C] hover:text-black'
+                                                ? 'bg-red-500/10 text-red-600 hover:bg-red-500 hover:text-white'
+                                                : 'bg-[#D9B36C]/20 text-[#1B263B] hover:bg-[#D9B36C] hover:text-black'
                                                 }`}
                                         >
                                             {profile.role === 'admin' ? 'Revoke Admin' : 'Make Admin'}

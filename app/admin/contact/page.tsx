@@ -1,12 +1,21 @@
 'use client'
-import { Mail, ShieldCheck, ArrowUpRight, Inbox } from 'lucide-react'
+import { Mail, ShieldCheck, ArrowUpRight, Inbox, ArrowLeft } from 'lucide-react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 export default function AdminContactManager() {
+    const router = useRouter();
+
     return (
         <main className="min-h-screen bg-[#F2EFDF] p-8 md:p-12">
-            <header className="mb-12 border-b border-[#D9B36C]/30 pb-6">
-                <h1 className="text-4xl font-black italic text-[#590202] uppercase tracking-tighter">Authentication Queue</h1>
-                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#1B263B]/60 mt-2">Incoming Grail Verification Requests</p>
+            <header className="mb-12 border-b border-[#D9B36C]/30 pb-6 flex justify-between items-end">
+                <div>
+                    <h1 className="text-4xl font-black italic text-[#590202] uppercase tracking-tighter">Authentication Queue</h1>
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#1B263B]/60 mt-2">Incoming Grail Verification Requests</p>
+                </div>
+                <Link href="/admin/dashboard" title="Return to Dashboard" className="flex items-center gap-2 bg-[#1B263B] text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#590202] transition-all shadow-lg">
+                    <ArrowLeft size={14} /> Back to Dashboard
+                </Link>
             </header>
 
             <div className="bg-white rounded-[2.5rem] border border-[#D9B36C]/20 overflow-hidden shadow-2xl">
@@ -30,7 +39,11 @@ export default function AdminContactManager() {
                                 <span className="bg-[#D9B36C]/20 text-[#590202] px-3 py-1 rounded-full text-[9px] uppercase font-black">Urgent Scan</span>
                             </td>
                             <td className="p-6 text-right">
-                                <button className="inline-flex items-center gap-2 bg-[#1B263B] text-white px-4 py-2 rounded-lg text-[9px] uppercase tracking-widest hover:bg-[#590202] transition-all">
+                                <button
+                                    title="Review Customer Request"
+                                    onClick={() => router.push('/under-construction')}
+                                    className="inline-flex items-center gap-2 bg-[#1B263B] text-white px-4 py-2 rounded-lg text-[9px] uppercase tracking-widest hover:bg-[#590202] transition-all"
+                                >
                                     Open Case <ArrowUpRight size={12} />
                                 </button>
                             </td>

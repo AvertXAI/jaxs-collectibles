@@ -1,16 +1,27 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   images: {
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'cdn.sanity.io',
       },
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.supabase.co',
+      },
+      {
+        // THE FIX: Authorize Unsplash for the Construction page
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      }
     ],
   },
-  // If you specifically need to allow origins for Server Actions/Forms:
   experimental: {
     serverActions: {
       allowedOrigins: ["192.168.1.245", "localhost:3000"],
