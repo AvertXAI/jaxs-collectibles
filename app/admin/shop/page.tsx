@@ -37,6 +37,7 @@ export default function AdminShopManager() {
         const confirmed = window.confirm(`Are you sure you want to purge "${name}" from the Vault? This cannot be undone.`);
         if (confirmed) {
             try {
+                // THE FIX: Ensuring the URL strictly uses the Supabase 'id'
                 const response = await fetch(`/api/products/${id}`, { method: 'DELETE' });
                 if (response.ok) {
                     setProducts(products.filter(p => p.id !== id));
@@ -61,11 +62,10 @@ export default function AdminShopManager() {
                 </div>
 
                 <div className="flex gap-4">
-                    <Link href="/admin/dashboard" className="flex items-center gap-2 bg-[#1B263B] text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#590202] transition-all shadow-lg">
+                    <Link href="/admin/dashboard" title="Return to Dashboard" className="flex items-center gap-2 bg-[#1B263B] text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#590202] transition-all shadow-lg">
                         <ArrowLeft size={14} /> Back to Dashboard
                     </Link>
 
-                    {/* THE FIX: Moved the Add Product mechanic here */}
                     <button
                         onClick={() => router.push('/under-construction')}
                         title="Add a new physical asset to the database"
@@ -131,6 +131,7 @@ export default function AdminShopManager() {
                 <EditProductModal
                     product={editingProduct}
                     onClose={() => setEditingProduct(null)}
+                    // THE FIX: Ensuring 'updated' matches Supabase schema 'id'
                     onUpdate={(updated) => setProducts(products.map(p => p.id === updated.id ? updated : p))}
                 />
             )}

@@ -31,6 +31,7 @@ export async function executeDatabaseSeed() {
             await supabaseAdmin.from('profiles').update({
                 first_name: u.firstName,
                 last_name: u.lastName,
+                phone: u.phone,
                 role: 'user'
             }).eq('id', authData.user.id);
             usersCreated++;

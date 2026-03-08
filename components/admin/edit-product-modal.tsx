@@ -9,6 +9,9 @@ interface EditModalProps {
 }
 
 export default function EditProductModal({ product, onClose, onUpdate }: EditModalProps) {
+    // Ensuring we capture the correct Supabase ID
+    const productId = product.id;
+
     const [formData, setFormData] = useState({
         name: product.name,
         price: product.price,
@@ -16,8 +19,13 @@ export default function EditProductModal({ product, onClose, onUpdate }: EditMod
     })
 
     const handleSave = async () => {
+        if (!productId) {
+            alert("Error: Missing Product ID. Update aborted.");
+            return;
+        }
+
         try {
-            const response = await fetch(`/api/products/${product._id}`, {
+            const response = await fetch(`/api/products/${productId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
@@ -26,6 +34,9 @@ export default function EditProductModal({ product, onClose, onUpdate }: EditMod
             if (response.ok) {
                 onUpdate({ ...product, ...formData })
                 onClose()
+            } else {
+                const errData = await response.json();
+                alert(`Update failed: ${errData.error || 'Check server logs'}`);
             }
         } catch (error) {
             console.error("Update failed:", error)
@@ -34,8 +45,8 @@ export default function EditProductModal({ product, onClose, onUpdate }: EditMod
 
     return (
         <div className="fixed inset-0 bg-[#1B263B]/80 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
-            <div className="bg-[#F2EFDF] w-full max-w-lg rounded-[2.5rem] p-10 border border-[#D9B36C]/30 shadow-2xl relative animate-in fade-in zoom-in duration-300">
-                <button onClick={onClose} className="absolute top-6 right-6 text-[#1B263B]/40 hover:text-[#590202]">
+            <div className="bg-[#F2EFDF] w-full max-w-lg rounded-[2.5rem] p-10 border border-[#D9B36C]/30 shadow-2xl relative">
+                <button onClick={onClose} title="Close Modal" className="absolute top-6 right-6 text-[#1B263B]/40 hover:text-[#590202]">
                     <X size={24} />
                 </button>
 
@@ -73,6 +84,7 @@ export default function EditProductModal({ product, onClose, onUpdate }: EditMod
 
                 <button
                     onClick={handleSave}
+                    title="Commit changes to Database"
                     className="w-full bg-[#590202] text-white py-4 rounded-xl mt-10 font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl hover:bg-[#1B263B] transition-all"
                 >
                     <Save size={18} /> Update Asset in Vault

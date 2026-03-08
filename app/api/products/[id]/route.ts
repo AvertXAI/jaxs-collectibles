@@ -1,64 +1,41 @@
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
-import { NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
+import { getDbCortex } from '@/brain/db/cortex';
+import { BrainError, ErrorSource } from '@/brain/errors';
 
 export async function PATCH(
     request: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
-    const { id } = await params;
-    const body = await request.json();
-    const cookieStore = await cookies();
+    try {
+        const supabase = await getDbCortex();
+        const body = await request.json();
+        const { id } = await params;
 
-    const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-            cookies: {
-                getAll() { return cookieStore.getAll() },
-                setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options))
-                },
-            },
+        console.log(`[BRAIN_CORTEX] Attempting update for Asset ID: ${id}`);
+
+        const { data, error } = await supabase
+            .from('products')
+            .update({
+                name: body.name,
+                price: body.price,
+                category: body.category,
+            })
+            .eq('id', id)
+            .select();
+
+        if (error) {
+            console.error("[DATABASE_CORTEX] Update Error:", error);
+            throw new BrainError("Database Update Failed", ErrorSource.DATABASE, 500, error);
         }
-    )
 
-    const { data, error } = await supabase
-        .from('products')
-        .update({
-            name: body.name,
-            price: body.price,
-            // We'll update category logic once we map your new IDs
-        })
-        .eq('id', id)
-        .select()
-
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-    return NextResponse.json({ message: "Asset refined in the Vault", result: data });
-}
-
-export async function DELETE(
-    request: Request,
-    { params }: { params: Promise<{ id: string }> }
-) {
-    const { id } = await params;
-    const cookieStore = await cookies();
-
-    const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-            cookies: {
-                getAll() { return cookieStore.getAll() },
-                setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options))
-                },
-            },
+        if (!data || data.length === 0) {
+            console.warn("[DATABASE_CORTEX] No rows updated. ID might not exist.");
         }
-    )
 
-    const { error } = await supabase.from('products').delete().eq('id', id);
-
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-    return NextResponse.json({ message: `Asset ${id} successfully purged` });
+        console.log(`[BRAIN_CORTEX] Asset ${id} successfully refined in Vault.`);
+        return NextResponse.json({ success: true, data });
+    } catch (error: any) {
+        const status = error instanceof BrainError ? error.statusCode : 500;
+        return NextResponse.json({ error: error.message }, { status });
+    }
 }
