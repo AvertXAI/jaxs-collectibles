@@ -8,8 +8,9 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { useParams } from 'next/navigation'
 import Image from 'next/image'
-import { ShieldCheck, ShoppingCart, Heart, Star, Truck, RotateCcw, Info, AlertTriangle } from 'lucide-react'
+import { ShieldCheck, ShoppingCart, Heart, Star, Truck, RotateCcw, AlertTriangle } from 'lucide-react'
 import Link from 'next/link'
+import { useCart } from '@/context/CartContext'
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -18,6 +19,8 @@ const supabase = createClient(
 
 export default function AssetCloserPage() {
     const { slug } = useParams()
+    const { addToCart } = useCart() // THE ACTIVATION HOOK
+
     const [product, setProduct] = useState<any>(null)
     const [loading, setLoading] = useState(true)
     const [quantity, setQuantity] = useState(1)
@@ -43,6 +46,19 @@ export default function AssetCloserPage() {
 
     const allImages = product.images || [product.image_url]
     const availableStock = product.stock || 0;
+
+    // Helper to handle the cart push
+    const handleAcquisition = () => {
+        addToCart({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            quantity: quantity,
+            image: allImages[0],
+            stock: availableStock,
+            slug: product.slug
+        })
+    }
 
     return (
         <main className="min-h-screen bg-[#FDFBF7] pt-24 pb-20">
@@ -129,7 +145,10 @@ export default function AssetCloserPage() {
                                         <span className="text-2xl font-black text-[#1B263B]">${product.price.toFixed(2)}</span>
                                     </div>
 
-                                    <button className="w-full bg-[#590202] text-white py-6 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl hover:bg-[#1B263B] transition-all flex items-center justify-center gap-4 group">
+                                    <button
+                                        onClick={handleAcquisition}
+                                        className="w-full bg-[#590202] text-white py-6 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl hover:bg-[#1B263B] transition-all flex items-center justify-center gap-4 group"
+                                    >
                                         <ShieldCheck size={20} className="group-hover:scale-110 transition-transform" />
                                         Buy Asset Now
                                     </button>
@@ -170,7 +189,10 @@ export default function AssetCloserPage() {
                                         <span className="text-2xl font-black text-[#1B263B]">${(product.price * quantity).toFixed(2)}</span>
                                     </div>
 
-                                    <button className="w-full bg-[#1B263B] text-white py-5 rounded-xl font-black uppercase tracking-[0.2em] hover:bg-[#590202] transition-all flex items-center justify-center gap-3 shadow-lg group">
+                                    <button
+                                        onClick={handleAcquisition}
+                                        className="w-full bg-[#1B263B] text-white py-5 rounded-xl font-black uppercase tracking-[0.2em] hover:bg-[#590202] transition-all flex items-center justify-center gap-3 shadow-lg group"
+                                    >
                                         <ShoppingCart size={18} className="group-hover:scale-110 transition-transform" /> Add Asset to Cart
                                     </button>
                                 </>

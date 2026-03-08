@@ -4,25 +4,37 @@
 //////////////////////////////////////////////////
 'use client'
 import { useState } from 'react'
+import { usePathname } from 'next/navigation'
 import { Search, ShoppingCart, User, Menu, X, Heart } from 'lucide-react'
 import Link from 'next/link'
-import NextImage from 'next/image' // Fixes the JSX component error
+import NextImage from 'next/image'
+import { useCart } from '@/context/CartContext'
 
 export default function Header() {
-  const [isOpen, setIsOpen] = useState(false)
+  const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Fetch context logic
+  const { cart, isCartOpen, setCartOpen } = useCart();
+
+  // AUTO-HIDE LOGIC: If we are in the Vault/Admin, do not render the Header.
+  const isStudioView = pathname.startsWith('/vault') || pathname.startsWith('/studio') || pathname.startsWith('/admin');
+  if (isStudioView) return null;
+
+  // Calculate total item quantity for the badge
+  const itemCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
     <header className="vault-header">
       <div className="header-container">
-
-        {/* 1. LEFT: THE LOGO + TEXT (Uses .header-brand for flex-1) */}
+        {/* 1. LEFT: LOGO */}
         <Link href="/" className="header-brand group">
-          <div className="relative w-16 md:w-20 md:h-20 spect-square">
+          <div className="relative w-16 md:w-20 md:h-20 aspect-square">
             <NextImage
               src="/logo.png"
               alt="Jax's Collectibles Logo"
               fill
-              sizes="(max-width: 768px) 128px, 160px"
+              sizes="(max-width: 768px) 128px, px"
               className="object-contain drop-shadow-md group-hover:scale-110 transition-transform"
               priority
             />
@@ -37,7 +49,7 @@ export default function Header() {
           </div>
         </Link>
 
-        {/* 2. CENTER: NAV (Uses .header-nav for flex-[2] centering) */}
+        {/* 2. CENTER: NAV */}
         <nav className="header-nav">
           <Link href="/" className="nav-link">Home</Link>
           <Link href="/shop" className="nav-link">Shop</Link>
@@ -49,14 +61,24 @@ export default function Header() {
           </Link>
         </nav>
 
-        {/* 3. RIGHT: UTILITIES (Uses .header-utilities for flex-1) */}
+        {/* 3. RIGHT: UTILITIES */}
         <div className="header-utilities">
           <div className="flex items-center gap-6 border-r border-[#D9B36C]/30 pr-8 hidden md:flex">
             <Link href="/search" className="hover:text-[#590202] transition-colors"><Search size={22} /></Link>
-            <Link href="/cart" className="relative hover:text-[#590202] transition-colors">
+
+            {/* CART TRIGGER WITH DYNAMIC BADGE & STRICT TOGGLE */}
+            <button
+              onClick={() => setCartOpen(!isCartOpen)}
+              className="relative hover:text-[#590202] transition-colors p-1"
+            >
               <ShoppingCart size={22} />
-              <span className="absolute -top-1 -right-1 bg-[#590202] text-white text-[8px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
-            </Link>
+              {itemCount > 0 && (
+                <span className="absolute -top-1 -right-2 bg-[#590202] text-white text-[9px] w-5 h-5 rounded-full flex items-center justify-center font-black border-2 border-white animate-in zoom-in">
+                  {itemCount}
+                </span>
+              )}
+            </button>
+
             <Link href="/wishlist" className="hover:text-[#590202] transition-colors">
               <Heart size={22} />
             </Link>
@@ -67,7 +89,6 @@ export default function Header() {
             <span className="hidden xl:inline text-[10px] font-black uppercase tracking-[0.2em]">Login / Join</span>
           </Link>
 
-          {/* MOBILE MENU TRIGGER */}
           <button onClick={() => setIsOpen(!isOpen)} className="xl:hidden p-2">
             {isOpen ? <X size={28} /> : <Menu size={28} />}
           </button>

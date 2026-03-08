@@ -168,40 +168,8 @@ body:has(.admin-toolbar-container) .vault-header {
   }
 }
 
-/* --- SANITY STUDIO LAYOUT RECOVERY --- */
-
-/* 4. Sanity needs to fill the screen minus the 40px Toolbar. No extra margins! */
-#sanity {
-  width: 100vw !important;
-  height: calc(100vh - 40px) !important;
-  margin-top: 0 !important;
-  /* Fixed: Removed the rogue margin causing the white block */
-  padding: 0 !important;
-  overflow-x: hidden !important;
-}
-
-[data-testid="studio-layout"],
-[class*="StudioLayout"],
-[class*="Workspace"] {
-  width: 100vw !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  box-sizing: border-box !important;
-}
-
-.sanity-custom-nav-wrapper {
-  width: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
 /* --- PREVENT CONTENT CRUSH UNDER STICKY HEADER --- */
 main {
   padding-top: 2rem !important;
   /* Forces the Vault title down so the header doesn't cover it */
-}
-
-/* BUT: Disable this bumper specifically for the Sanity Studio so it stays full screen */
-body:has(#sanity) main {
-  padding-top: 0 !important;
 }

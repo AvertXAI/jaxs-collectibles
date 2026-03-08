@@ -2,15 +2,14 @@
 // Author: Jason Cruz
 // Copyright © 2026
 //////////////////////////////////////////////////
-'use client'
-
-import { usePathname } from 'next/navigation'
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import Header from "@/components/header";
 import AdminToolbar from "@/components/admin-toolbar";
-import { Footer } from '@/components/global/footer'
+import { Footer } from '@/components/global/footer';
+import { CartProvider } from '@/context/CartContext';
+import { CartSidebar } from '@/components/global/cart-sidebar';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,33 +22,30 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const pathname = usePathname();
-
-  // Logic: Only hide the header if we are in the Studio/Vault/Admin paths
-  const isStudioView = pathname.startsWith('/vault') || pathname.startsWith('/studio') || pathname.startsWith('/admin');
-
   return (
     <html lang="en" className="light" style={{ colorScheme: 'light' }}>
       <body className={`bg-[#FDFBF7] text-[#1A1A1A] antialiased ${geistSans.variable} min-h-screen flex flex-col`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          forcedTheme="light"
-          enableSystem={false}
-          disableTransitionOnChange
-        >
-          <AdminToolbar />
+        <CartProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            forcedTheme="light"
+            enableSystem={false}
+            disableTransitionOnChange
+          >
+            <AdminToolbar />
 
-          {/* SITE HEADER: Shows on public pages */}
-          {!isStudioView && <Header />}
+            <CartSidebar />
 
-          <main className="relative flex-grow">
-            {children}
-          </main>
+            <Header />
 
-          {/* GLOBAL FOOTER */}
-          <Footer />
-        </ThemeProvider>
+            <main className="relative flex-grow">
+              {children}
+            </main>
+
+            <Footer />
+          </ThemeProvider>
+        </CartProvider>
       </body>
     </html>
   );
