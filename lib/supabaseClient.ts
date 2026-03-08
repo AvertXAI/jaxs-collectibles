@@ -1,3 +1,7 @@
+//////////////////////////////////////////////////
+// Author: Jason Cruz
+// Copyright © 2026
+//////////////////////////////////////////////////
 import { createBrowserClient } from '@supabase/ssr'
 
 // The official SSR helper handles the singleton pattern automatically

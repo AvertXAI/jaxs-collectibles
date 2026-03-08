@@ -1,3 +1,7 @@
+//////////////////////////////////////////////////
+// Author: Jason Cruz
+// Copyright © 2026
+//////////////////////////////////////////////////
 export default function VerifyEmailPage() {
     return (
         <main className="min-h-screen bg-[#F2EFDF] flex items-center justify-center p-6 text-center">

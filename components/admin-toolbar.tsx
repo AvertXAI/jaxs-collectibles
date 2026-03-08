@@ -1,3 +1,7 @@
+//////////////////////////////////////////////////
+// Author: Jason Cruz
+// Copyright © 2026
+//////////////////////////////////////////////////
 'use client'
 import { useState, useEffect } from 'react'
 import { Layout, Eye, Settings, ShieldCheck, LogOut, Crown } from 'lucide-react'

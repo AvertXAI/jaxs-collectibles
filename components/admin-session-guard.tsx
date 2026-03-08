@@ -1,3 +1,7 @@
+//////////////////////////////////////////////////
+// Author: Jason Cruz
+// Copyright © 2026
+//////////////////////////////////////////////////
 'use client'
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { createBrowserClient } from '@supabase/ssr'

@@ -1,3 +1,7 @@
+//////////////////////////////////////////////////
+// Author: Jason Cruz
+// Copyright © 2026
+//////////////////////////////////////////////////
 import Image from 'next/image'
 import Link from 'next/link'
 import ProductStatus from './product-status'

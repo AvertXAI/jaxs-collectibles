@@ -1,3 +1,7 @@
+//////////////////////////////////////////////////
+// Author: Jason Cruz
+// Copyright © 2026
+//////////////////////////////////////////////////
 import { getDbCortex } from '../db/cortex';
 import { BrainError, ErrorSource } from '../errors';
 

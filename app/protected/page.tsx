@@ -1,3 +1,7 @@
+//////////////////////////////////////////////////
+// Author: Jason Cruz
+// Copyright © 2026
+//////////////////////////////////////////////////
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";

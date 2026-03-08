@@ -1,3 +1,7 @@
+//////////////////////////////////////////////////
+// Author: Jason Cruz
+// Copyright © 2026
+//////////////////////////////////////////////////
 import { UpdatePasswordForm } from "@/components/update-password-form";
 
 export default function Page() {

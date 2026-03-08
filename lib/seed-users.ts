@@ -1,3 +1,7 @@
+//////////////////////////////////////////////////
+// Author: Jason Cruz
+// Copyright © 2026
+//////////////////////////////////////////////////
 export const seedUsers = [
     { email: "marcus.vance@collector.net", firstName: "Marcus", lastName: "Vance", phone: "+1 (555) 102-9384", password: "SecurePassword123!" },
     { email: "elena.rostova@collector.net", firstName: "Elena", lastName: "Rostova", phone: "+1 (555) 293-8475", password: "SecurePassword123!" },

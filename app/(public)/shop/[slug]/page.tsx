@@ -1,3 +1,7 @@
+//////////////////////////////////////////////////
+// Author: Jason Cruz
+// Copyright © 2026
+//////////////////////////////////////////////////
 import { Suspense } from "react";
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'

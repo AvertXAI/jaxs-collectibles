@@ -1,3 +1,7 @@
+//////////////////////////////////////////////////
+// Author: Jason Cruz
+// Copyright © 2026
+//////////////////////////////////////////////////
 "use client";
 import { useState } from 'react';
 import { Instagram, Facebook, Twitter, ShieldCheck } from 'lucide-react';
@@ -26,7 +30,7 @@ export default function Home() {
       )}
 
       {/* HEADER IS NOW IN layout.tsx */}
-      
+
       {/* HERO SECTION */}
       <section className="py-24 flex flex-col justify-center items-center text-center px-6">
         <h2 className="text-7xl md:text-[10rem] font-black italic tracking-tighter leading-none mb-6">
@@ -45,14 +49,6 @@ export default function Home() {
       <div className="bg-white/50 backdrop-blur-sm">
         <ShopGrid />
       </div>
-
-      {/* FOOTER */}
-      <footer className="p-20 border-t border-[#D9B36C]/20 text-center bg-[#1B263B] text-[#F2EFDF]">
-        <p className="text-[10px] mb-6 tracking-[0.3em] uppercase font-bold">© 2026 JAX'S COLLECTIBLES | 5% TRANSACTION FEE APPLIES</p>
-        <div className="flex justify-center gap-8 opacity-60">
-          <Instagram size={18} /> <Facebook size={18} /> <Twitter size={18} />
-        </div>
-      </footer>
     </main>
   );
 }

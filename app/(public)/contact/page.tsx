@@ -1,3 +1,7 @@
+//////////////////////////////////////////////////
+// Author: Jason Cruz
+// Copyright © 2026
+//////////////////////////////////////////////////
 export default function ContactPage() {
     return (
         <main className="min-h-screen pt-20 px-6 max-w-5xl mx-auto">

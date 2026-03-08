@@ -1,3 +1,7 @@
+//////////////////////////////////////////////////
+// Author: Jason Cruz
+// Copyright © 2026
+//////////////////////////////////////////////////
 'use client'
 
 import { usePathname } from 'next/navigation'
@@ -6,6 +10,7 @@ import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import Header from "@/components/header";
 import AdminToolbar from "@/components/admin-toolbar";
+import { Footer } from '@/components/global/footer'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,12 +25,12 @@ export default function RootLayout({
 }>) {
   const pathname = usePathname();
 
-  // Logic: Only hide the header if we are exactly in the Studio/Vault paths
-  const isStudioView = pathname.startsWith('/vault') || pathname.startsWith('/studio');
+  // Logic: Only hide the header if we are in the Studio/Vault/Admin paths
+  const isStudioView = pathname.startsWith('/vault') || pathname.startsWith('/studio') || pathname.startsWith('/admin');
 
   return (
     <html lang="en" className="light" style={{ colorScheme: 'light' }}>
-      <body className={`bg-[#FDFBF7] text-[#1A1A1A] antialiased ${geistSans.variable}`}>
+      <body className={`bg-[#FDFBF7] text-[#1A1A1A] antialiased ${geistSans.variable} min-h-screen flex flex-col`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
@@ -33,18 +38,17 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
-          {/* ADMIN TOOLBAR: We mount it globally.
-              The component itself handles its own "Hidden Guard"
-              logic to prevent deadlocks in the root.
-          */}
           <AdminToolbar />
 
-          {/* SITE HEADER: Shows on all pages EXCEPT the Vault/Studio */}
+          {/* SITE HEADER: Shows on public pages */}
           {!isStudioView && <Header />}
 
-          <main className="relative">
+          <main className="relative flex-grow">
             {children}
           </main>
+
+          {/* GLOBAL FOOTER */}
+          <Footer />
         </ThemeProvider>
       </body>
     </html>

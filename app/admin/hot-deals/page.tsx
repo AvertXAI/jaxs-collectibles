@@ -1,3 +1,7 @@
+//////////////////////////////////////////////////
+// Author: Jason Cruz
+// Copyright © 2026
+//////////////////////////////////////////////////
 'use client'
 import { Flame, Percent, Save, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'

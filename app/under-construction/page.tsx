@@ -1,3 +1,7 @@
+//////////////////////////////////////////////////
+// Author: Jason Cruz
+// Copyright © 2026
+//////////////////////////////////////////////////
 'use client'
 import { ArrowLeft, HardHat } from 'lucide-react'
 import { useRouter } from 'next/navigation'

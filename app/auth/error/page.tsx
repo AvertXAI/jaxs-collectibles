@@ -1,3 +1,7 @@
+//////////////////////////////////////////////////
+// Author: Jason Cruz
+// Copyright © 2026
+//////////////////////////////////////////////////
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Suspense } from "react";
 

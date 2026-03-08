@@ -1,3 +1,7 @@
+//////////////////////////////////////////////////
+// Author: Jason Cruz
+// Copyright © 2026
+//////////////////////////////////////////////////
 // Base data array
 const rawSeedData = [
     { name: 'Shadowflare Dragon (Holographic)', category: 'cards', availability: 'available', price: 299.99, stock: 5, description: 'Rare holographic shadow-type dragon from the First Awakening set.' },

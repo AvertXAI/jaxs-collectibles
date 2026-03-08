@@ -1,3 +1,7 @@
+//////////////////////////////////////////////////
+// Author: Jason Cruz
+// Copyright © 2026
+//////////////////////////////////////////////////
 'use client'
 import { Database, LayoutDashboard, Package, Users, Settings, Flame, User, AlertOctagon, FileText } from 'lucide-react'
 import Link from 'next/link'
@@ -83,6 +87,9 @@ export default function AdminDashboard() {
                     </Link>
                     <Link href="/under-construction" className="flex items-center gap-4 bg-white border border-[#D9B36C]/20 hover:bg-[#F2EFDF] text-[#1B263B] p-5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all">
                         <Users size={20} /> Inbox / Tickets
+                    </Link>
+                    <Link href="/admin/faq" className="flex items-center gap-4 bg-white border border-[#D9B36C]/20 hover:bg-[#F2EFDF] text-[#1B263B] p-5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all">
+                        <Database size={20} /> FAQ Intelligence
                     </Link>
                     <Link href="/under-construction" className="flex items-center gap-4 bg-white border border-[#D9B36C]/20 hover:bg-[#F2EFDF] text-[#1B263B] p-5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all">
                         <Flame size={20} /> Market Volatility

@@ -1,3 +1,7 @@
+//////////////////////////////////////////////////
+// Author: Jason Cruz
+// Copyright © 2026
+//////////////////////////////////////////////////
 import { BrainError, ErrorSource } from './errors';
 
 export function logBrainFailure(error: unknown) {

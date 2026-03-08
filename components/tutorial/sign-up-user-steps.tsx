@@ -1,3 +1,7 @@
+//////////////////////////////////////////////////
+// Author: Jason Cruz
+// Copyright © 2026
+//////////////////////////////////////////////////
 import Link from "next/link";
 import { TutorialStep } from "./tutorial-step";
 import { ArrowUpRight } from "lucide-react";

@@ -1,3 +1,7 @@
+//////////////////////////////////////////////////
+// Author: Jason Cruz
+// Copyright © 2026
+//////////////////////////////////////////////////
 import { NextResponse } from "next/server";
 import { executeDatabaseSeed } from "@/brain/admin/seedMechanic";
 import { logBrainFailure } from "@/brain/logger";

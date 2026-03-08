@@ -1,3 +1,7 @@
+//////////////////////////////////////////////////
+// Author: Jason Cruz
+// Copyright © 2026
+//////////////////////////////////////////////////
 'use client'
 import { useState } from 'react'
 import { Instagram, Facebook, Twitter, Menu, X, Search, Shield } from 'lucide-react'

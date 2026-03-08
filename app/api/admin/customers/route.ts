@@ -1,3 +1,7 @@
+//////////////////////////////////////////////////
+// Author: Jason Cruz
+// Copyright © 2026
+//////////////////////////////////////////////////
 import { NextResponse } from "next/server";
 import { fetchCustomerIntelligence } from "@/brain/users/customerMechanic";
 import { logBrainFailure } from "@/brain/logger";
