@@ -4,12 +4,16 @@
 //////////////////////////////////////////////////
 'use client'
 import { useCart } from '@/context/CartContext'
-import { ShoppingBag, ArrowLeft, Trash2, MapPin, Plus, Ticket } from 'lucide-react'
+import { ShoppingBag, ArrowLeft, Trash2, MapPin, Plus, Ticket, ShieldCheck } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
 export default function RetailCartPage() {
     const { cart, removeFromCart, updateQuantity, cartTotal, clearCart } = useCart()
+
+    // --- PHASE 28: STRICT ORDER MATH ---
+    const vaultFee = cartTotal * 0.05;
+    const finalTotal = cartTotal + vaultFee;
 
     // THE RESET PROTOCOL: confirm dialog before wipe
     const handleReset = () => {
@@ -26,9 +30,9 @@ export default function RetailCartPage() {
                     <div className="w-32 h-32 bg-[#F2EFDF] rounded-full flex items-center justify-center mx-auto mb-8">
                         <ShoppingBag size={56} className="text-[#1B263B] opacity-20" />
                     </div>
-                    <h1 className="text-3xl font-black text-[#1B263B] uppercase mb-4 tracking-tighter">Your cart is feeling lonely</h1>
+                    <h1 className="text-3xl font-black text-[#1B263B] uppercase mb-4 tracking-tighter">Your vault is empty</h1>
                     <p className="text-sm font-bold text-[#1B263B]/50 uppercase mb-10 leading-relaxed">
-                        Looks like you haven't added anything to your cart yet. Let's change that and find some amazing collectibles for you!
+                        Looks like you haven't secured any assets yet. Let's find some rare collectibles for you!
                     </p>
                     <Link href="/shop" className="inline-flex items-center gap-3 bg-[#1B263B] text-white px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#590202] transition-all shadow-xl">
                         Discover Products <ArrowLeft size={16} className="rotate-180" />
@@ -43,7 +47,7 @@ export default function RetailCartPage() {
             <div className="container mx-auto px-8 max-w-7xl">
                 <div className="flex items-center justify-between mb-12 border-b border-[#D9B36C]/20 pb-8">
                     <h1 className="text-4xl font-black italic text-[#1B263B] uppercase tracking-tighter flex items-center gap-4">
-                        <ShoppingBag size={32} className="text-[#590202]" /> Shopping Cart
+                        <ShoppingBag size={32} className="text-[#590202]" /> Active Acquisition
                     </h1>
                     <button onClick={handleReset} className="bg-red-50 text-[#590202] px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#590202] hover:text-white transition-all border border-red-100">
                         Reset Cart
@@ -55,7 +59,7 @@ export default function RetailCartPage() {
                     {/* LEFT: PRODUCT LIST */}
                     <div className="lg:col-span-8 space-y-4">
                         {cart.map(item => (
-                            <div key={item.id} className="bg-white border border-[#D9B36C]/10 rounded-3xl p-6 flex gap-8 items-center shadow-sm">
+                            <div key={item.id} className="bg-white border border-[#D9B36C]/10 rounded-3xl p-6 flex gap-8 items-center shadow-sm hover:shadow-md transition-shadow">
                                 <div className="w-32 h-32 bg-[#F2EFDF]/30 rounded-2xl flex-shrink-0 relative p-4 border border-[#D9B36C]/10">
                                     <Image src={item.image} alt={item.name} fill className="object-contain mix-blend-multiply" />
                                 </div>
@@ -65,12 +69,12 @@ export default function RetailCartPage() {
                                         <span className="font-black text-[#1B263B] text-lg">${item.price.toFixed(2)}</span>
                                     </div>
                                     <div className="flex items-center justify-between">
-                                        <div className="flex items-center border border-[#D9B36C]/20 rounded-xl overflow-hidden shadow-inner">
-                                            <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="px-4 py-2 hover:bg-[#F2EFDF] font-black">-</button>
-                                            <span className="px-6 py-2 text-xs font-black bg-[#F2EFDF]/20">{item.quantity}</span>
-                                            <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="px-4 py-2 hover:bg-[#F2EFDF] font-black">+</button>
+                                        <div className="flex items-center border border-[#D9B36C]/20 rounded-xl overflow-hidden shadow-inner bg-[#FDFBF7]">
+                                            <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="px-4 py-2 hover:bg-[#F2EFDF] font-black text-[#1B263B]">-</button>
+                                            <span className="px-6 py-2 text-xs font-black bg-[#F2EFDF]/40 text-[#1B263B]">{item.quantity}</span>
+                                            <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="px-4 py-2 hover:bg-[#F2EFDF] font-black text-[#1B263B]">+</button>
                                         </div>
-                                        <button onClick={() => removeFromCart(item.id)} className="text-[#590202]/30 hover:text-[#590202] transition-colors p-2">
+                                        <button onClick={() => removeFromCart(item.id)} className="text-[#590202]/30 hover:text-[#590202] transition-colors p-2 bg-red-50 rounded-lg">
                                             <Trash2 size={20} />
                                         </button>
                                     </div>
@@ -90,10 +94,15 @@ export default function RetailCartPage() {
                                     <span>Subtotal</span>
                                     <span className="text-[#1B263B]">${cartTotal.toFixed(2)}</span>
                                 </div>
+                                <div className="flex justify-between text-xs font-bold text-[#590202] uppercase tracking-widest">
+                                    <span>Vault Fee (5%)</span>
+                                    <span>${vaultFee.toFixed(2)}</span>
+                                </div>
                                 <div className="flex justify-between text-xs font-bold text-emerald-600 uppercase tracking-widest">
                                     <span>Discount</span>
                                     <span>-$0.00</span>
                                 </div>
+
                                 <div className="pt-4 border-t border-[#D9B36C]/10">
                                     <p className="text-[9px] font-black uppercase tracking-widest text-[#1B263B]/40 mb-3">Coupon Code</p>
                                     <div className="flex gap-2">
@@ -101,13 +110,15 @@ export default function RetailCartPage() {
                                         <button className="bg-[#1B263B] text-white px-4 rounded-xl font-black text-[9px] uppercase"><Ticket size={14} /></button>
                                     </div>
                                 </div>
-                                <div className="flex justify-between text-xl font-black text-[#1B263B] uppercase tracking-tighter pt-6 border-t border-[#D9B36C]/20">
-                                    <span>Total</span>
-                                    <span className="text-[#590202]">${(cartTotal).toFixed(2)}</span>
+
+                                <div className="flex justify-between items-end pt-6 border-t border-[#D9B36C]/20">
+                                    <span className="text-sm font-black text-[#1B263B] uppercase tracking-tighter">Total Due</span>
+                                    <span className="text-3xl font-black text-[#590202]">${finalTotal.toFixed(2)}</span>
                                 </div>
-                                <button className="w-full bg-[#1B263B] text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl hover:bg-[#590202] transition-all mt-4">
-                                    Proceed to Checkout
-                                </button>
+
+                                <Link href="/checkout" className="w-full flex items-center justify-center gap-2 bg-[#1B263B] text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl hover:bg-[#590202] transition-all mt-4 group">
+                                    <ShieldCheck size={18} className="text-admin-gold group-hover:scale-110 transition-transform" /> Proceed to Checkout
+                                </Link>
                             </div>
                         </div>
 
