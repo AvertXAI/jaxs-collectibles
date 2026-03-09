@@ -86,7 +86,6 @@ export default function Header() {
             <Link href="/wishlist" className="text-[#1B263B] hover:text-[#590202] transition-colors"><Heart size={22} /></Link>
           </div>
 
-          {/* DYNAMIC LOGIN / LOGOUT TOGGLE */}
           {user ? (
             <button onClick={handleLogout} className="flex items-center gap-2 text-[#1B263B] hover:text-[#590202] transition-colors" title="Logout">
               <LogOut size={22} />
@@ -106,40 +105,47 @@ export default function Header() {
       {/* ========================================================= */}
       <div className="flex lg:hidden flex-col w-full">
         {/* TIER 1: BRAND & MOVED UTILITIES */}
-        <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center justify-between px-5 py-3"> {/* Increased padding to pull off edges */}
+
           <Link href="/" className="flex items-center gap-3">
-            <div className="relative w-10 h-10">
+            {/* THE FIX: Much larger logo (w-16 h-16) + flex-shrink-0 to prevent squishing */}
+            <div className="relative w-16 h-16 flex-shrink-0">
               <NextImage src="/logo.png" alt="Jax's Collectibles" fill className="object-contain" priority />
             </div>
-            <div className="flex flex-col">
-              <span className="text-lg font-black italic tracking-tighter text-[#590202] uppercase leading-[0.9]">Jax's</span>
-              <span className="text-lg font-black italic tracking-tighter text-[#590202] uppercase leading-[0.9]">Collectibles</span>
+            {/* THE FIX: Increased text size to text-xl */}
+            <div className="flex flex-col justify-center">
+              <span className="text-xl font-black italic tracking-tighter text-[#590202] uppercase leading-[0.9]">Jax's</span>
+              <span className="text-xl font-black italic tracking-tighter text-[#590202] uppercase leading-[0.9]">Collectibles</span>
             </div>
           </Link>
 
-          <div className="flex items-center gap-4 text-[#1B263B]">
-            <Link href="/search" className="hover:text-[#590202]"><Search size={20} /></Link>
+          {/* THE FIX: Added gap-4 for breathing room, restored Heart icon, removed edge-bleeding */}
+          <div className="flex items-center gap-4 text-[#1B263B] flex-shrink-0">
+            <Link href="/search" className="hover:text-[#590202]"><Search size={22} /></Link>
+
             <button onClick={() => setCartOpen(!isCartOpen)} className="relative hover:text-[#590202]">
-              <ShoppingCart size={20} />
+              <ShoppingCart size={22} />
               {itemCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-[#590202] text-white text-[8px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                <span className="absolute -top-2 -right-2 bg-[#590202] text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
                   {itemCount}
                 </span>
               )}
             </button>
-            <Link href="/wishlist" className="hover:text-[#590202] hidden sm:block"><Heart size={20} /></Link>
+
+            {/* THE FIX: Removed "hidden sm:block" so the heart always shows on mobile */}
+            <Link href="/wishlist" className="hover:text-[#590202]"><Heart size={22} /></Link>
 
             {/* DYNAMIC LOGIN / LOGOUT TOGGLE */}
             {user ? (
-              <button onClick={handleLogout} className="hover:text-[#590202]"><LogOut size={20} /></button>
+              <button onClick={handleLogout} className="hover:text-[#590202]"><LogOut size={22} /></button>
             ) : (
-              <Link href="/auth" className="hover:text-[#590202]"><User size={20} /></Link>
+              <Link href="/auth" className="hover:text-[#590202]"><User size={22} /></Link>
             )}
           </div>
         </div>
 
         {/* TIER 2: QUICK SCROLL NAV (NO HAMBURGER) */}
-        <nav className="flex items-center gap-6 px-4 py-3 border-t border-gray-100 overflow-x-auto no-scrollbar whitespace-nowrap bg-white">
+        <nav className="flex items-center gap-6 px-5 py-3 border-t border-gray-100 overflow-x-auto no-scrollbar whitespace-nowrap bg-white shadow-inner">
           <Link href="/" className="text-[11px] font-black uppercase tracking-widest text-[#590202]">Home</Link>
           <Link href="/shop" className="text-[11px] font-black uppercase tracking-widest text-[#1B263B]">Shop</Link>
           <Link href="/under-construction" className="text-[11px] font-black uppercase tracking-widest text-[#1B263B] opacity-70">Blog</Link>

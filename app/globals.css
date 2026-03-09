@@ -218,3 +218,86 @@ main {
     padding-top: 96px !important;
   }
 }
+
+/* ========================================================= */
+/* --- THE FIX: ADMIN TOOLBAR & SPACING SYSTEM ---           */
+/* ========================================================= */
+
+/* 1. ONE rule to push the body down to make room for the Toolbar */
+body:has(.admin-toolbar-container) {
+  padding-top: 40px !important;
+  margin-top: 0 !important;
+}
+
+/* 2. Tell the sticky site header to sit right under the 40px Toolbar */
+body:has(.admin-toolbar-container) .vault-header,
+body:has(.admin-toolbar-container) header.fixed {
+  top:40px ;
+}
+
+/* 3. The Toolbar itsef */
+.admin-toolbar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw !important;
+  height: 40px;
+  background-color: #1B263B;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .admin-toolbar-container {
+    padding: 0 12px;
+  }
+}
+
+/* --- THE FIX: MOBILE-FIRST HEADER SCROLL & FULL MEDIA QUERIES --- */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Base Mobile Phones (Accounts for 2-tier header) */
+main {
+  padding-top: 116px !important;
+}
+
+/* Small Tablets (e.g., large phones landscape) */
+@media (min-width: 640px) {
+  main {
+    padding-top: 120px !important;
+  }
+}
+
+/* Tablets / iPads (Portrait) */
+@media (min-width: 768px) {
+  main {
+    padding-top: 124px !important;
+  }
+}
+
+/* Desktop (Header collapses into single tier, requires less padding) */
+@media (min-width: 1024px) {
+  main {
+    padding-top: 96px !important;
+  }
+}
+
+/* Large Desktop / Ultrawide */
+@media (min-width: 1280px) {
+  main {
+    padding-top: 100px !important;
+  }
+}
