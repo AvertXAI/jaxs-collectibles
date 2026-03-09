@@ -120,7 +120,7 @@ export default function Header() {
           </Link>
 
           {/* THE FIX: Added gap-4 for breathing room, restored Heart icon, removed edge-bleeding */}
-          <div className="flex items-center gap-3 text-[#1B263B] flex-shrink-0">
+          <div className="flex items-center gap-2 text-[#1B263B] flex-shrink-0">
             <Link href="/search" className="hover:text-[#590202]"><Search size={22} /></Link>
 
             <button onClick={() => setCartOpen(!isCartOpen)} className="relative hover:text-[#590202]">
