@@ -173,3 +173,48 @@ main {
   padding-top: 2rem !important;
   /* Forces the Vault title down so the header doesn't cover it */
 }
+
+/* Custom scrollbar hide for the mobile nav */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Adjust Main Content for the new Multi-Tier Header height */
+main {
+  padding-top: 8px !important;
+  /* Mobile Header Height */
+}
+
+@media (min-width: 768px) {
+  main {
+    padding-top: 130px !important;
+    /* Desktop Header Height */
+  }
+}
+
+/* --- THE FIX: MOBILE-FIRST HEADER SCROLL & SPACING --- */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Base Mobile Padding (Accounts for 2-tier header) */
+main {
+  padding-top: 104px !important;
+}
+
+/* Desktop Padding (Accounts for 1-tier header) */
+@media (min-width: 1024px) {
+  main {
+    padding-top: 96px !important;
+  }
+}
