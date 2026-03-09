@@ -1,28 +1,25 @@
 //////////////////////////////////////////////////
 // Author: Jason Cruz
 // Copyright © 2026
+// File: app/page.tsx
 //////////////////////////////////////////////////
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@supabase/supabase-js'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, ShieldCheck, ChevronLeft, ChevronRight } from 'lucide-react'
+// THE FIX: Import the hook instead of createClient
+import { useSupabase } from '@/components/supabase-provider'
 
-// Public Supabase Connection
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
-
-const ITEMS_PER_PAGE = 8; // Forcing the 8-item grid limit
+const ITEMS_PER_PAGE = 8;
 
 export default function StorefrontHome() {
+  // THE FIX: Use the singleton to stop the "Multiple GoTrueClient instances" error
+  const supabase = useSupabase();
+
   const [products, setProducts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-
-  // Pagination State
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
 
@@ -30,11 +27,9 @@ export default function StorefrontHome() {
     async function fetchVaultAssets() {
       setLoading(true)
       try {
-        // Calculate range for pagination
         const from = (page - 1) * ITEMS_PER_PAGE;
         const to = from + ITEMS_PER_PAGE - 1;
 
-        // Fetch with exact count to calculate total pages
         const { data, error, count } = await supabase
           .from('products')
           .select('*', { count: 'exact' })
@@ -53,8 +48,9 @@ export default function StorefrontHome() {
         setLoading(false);
       }
     }
-    fetchVaultAssets()
-  }, [page])
+    // Only fire if the provider has mounted the singleton
+    if (supabase) fetchVaultAssets();
+  }, [page, supabase])
 
   return (
     <main className="min-h-screen bg-[#FDFBF7]">
@@ -97,7 +93,6 @@ export default function StorefrontHome() {
             <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#1B263B]/60 mt-2">Recently Added to the Vault</p>
           </div>
 
-          {/* PAGINATION DROPDOWN (TOP RIGHT) */}
           {totalPages > 1 && (
             <div className="flex items-center gap-3">
               <span className="text-[10px] font-black uppercase tracking-widest text-[#1B263B]/50">Jump to Page:</span>
@@ -124,7 +119,6 @@ export default function StorefrontHome() {
           </div>
         ) : (
           <>
-            {/* 8-ITEM GRID (4 Top, 4 Bottom) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {products.map((product) => (
                 <div key={product.id} className="bg-white rounded-2xl border border-[#D9B36C]/30 overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all group flex flex-col">
@@ -140,7 +134,6 @@ export default function StorefrontHome() {
                     ) : (
                       <span className="font-black text-[#1B263B]/20 uppercase tracking-widest">No Image</span>
                     )}
-                    {/* Verification Badge */}
                     <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-2 shadow-sm border border-[#D9B36C]/20">
                       <ShieldCheck size={14} className="text-emerald-600" />
                       <span className="text-[8px] font-black uppercase tracking-widest text-[#1B263B]">Verified</span>
@@ -160,7 +153,6 @@ export default function StorefrontHome() {
               ))}
             </div>
 
-            {/* BOTTOM PAGINATION CONTROLS */}
             {totalPages > 1 && (
               <div className="flex items-center justify-between mt-16 pt-8 border-t border-[#D9B36C]/20">
                 <button

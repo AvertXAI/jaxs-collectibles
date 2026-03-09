@@ -9,12 +9,15 @@ import { Search, ShoppingCart, User, LogOut, Heart } from 'lucide-react'
 import Link from 'next/link'
 import NextImage from 'next/image'
 import { useCart } from '@/context/CartContext'
-import { supabase } from '@/lib/supabaseClient'
+import { useSupabase } from '@/components/supabase-provider'
 
 export default function Header() {
   const pathname = usePathname();
   const { cart, isCartOpen, setCartOpen } = useCart();
   const [user, setUser] = useState<any>(null);
+
+  // THE FIX: You are missing this line right here! 👇
+  const supabase = useSupabase();
 
   // THE AUTH MECHANIC: Instantly toggle Login/Logout icons based on session
   useEffect(() => {
@@ -24,12 +27,13 @@ export default function Header() {
     };
     checkUser();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+    // THE FIX: Added explicit ': any' to satisfy TypeScript strict mode
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
       setUser(session?.user || null);
     });
 
     return () => authListener.subscription.unsubscribe();
-  }, []);
+  }, [supabase]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -51,8 +55,17 @@ export default function Header() {
       <div className="hidden lg:flex items-center justify-between px-8 py-4 max-w-[1800px] mx-auto w-full">
         {/* 1. LEFT: LOGO */}
         <Link href="/" className="flex items-center gap-4 group">
-          <div className="relative w-20 h-20">
-            <NextImage src="/logo.png" alt="Jax's Collectibles" fill className="object-contain drop-shadow-md group-hover:scale-110 transition-transform" priority />
+          <div className="w-20 h-20 flex items-center justify-center">
+            {/* THE FIX: Explicit width/height with auto styling kills the aspect-ratio warning */}
+            <NextImage
+              src="/logo.png"
+              alt="Jax's Collectibles"
+              width={80}
+              height={80}
+              style={{ width: 'auto', height: 'auto' }}
+              className="drop-shadow-md group-hover:scale-110 transition-transform"
+              priority
+            />
           </div>
           <div className="flex flex-col">
             <span className="text-2xl font-black italic tracking-tighter text-[#590202] uppercase leading-[0.8]">Jax's</span>
@@ -105,21 +118,26 @@ export default function Header() {
       {/* ========================================================= */}
       <div className="flex lg:hidden flex-col w-full">
         {/* TIER 1: BRAND & MOVED UTILITIES */}
-        <div className="flex items-center justify-between px-5 py-3"> {/* Increased padding to pull off edges */}
+        <div className="flex items-center justify-between px-5 py-3">
 
           <Link href="/" className="flex items-center gap-3">
-            {/* THE FIX: Much larger logo (w-16 h-16) + flex-shrink-0 to prevent squishing */}
-            <div className="relative w-20 h-20 flex-shrink-0">
-              <NextImage src="/logo.png" alt="Jax's Collectibles" fill className="object-contain" priority />
+            <div className="w-20 h-20 flex-shrink-0 flex items-center justify-center">
+              {/* THE FIX: Explicit width/height with auto styling kills the aspect-ratio warning */}
+              <NextImage
+                src="/logo.png"
+                alt="Jax's Collectibles"
+                width={80}
+                height={80}
+                style={{ width: 'auto', height: 'auto' }}
+                priority
+              />
             </div>
-            {/* THE FIX: Increased text size to text-xl */}
             <div className="flex flex-col justify-center">
               <span className="text-xl font-black italic tracking-tighter text-[#590202] uppercase leading-[0.9]">Jax's</span>
               <span className="text-xl font-black italic tracking-tighter text-[#590202] uppercase leading-[0.9]">Collectibles</span>
             </div>
           </Link>
 
-          {/* THE FIX: Added gap-4 for breathing room, restored Heart icon, removed edge-bleeding */}
           <div className="flex items-center gap-2 text-[#1B263B] flex-shrink-0">
             <Link href="/search" className="hover:text-[#590202]"><Search size={22} /></Link>
 
@@ -132,7 +150,6 @@ export default function Header() {
               )}
             </button>
 
-            {/* THE FIX: Removed "hidden sm:block" so the heart always shows on mobile */}
             <Link href="/wishlist" className="hover:text-[#590202]"><Heart size={22} /></Link>
 
             {/* DYNAMIC LOGIN / LOGOUT TOGGLE */}
