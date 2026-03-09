@@ -1,3 +1,7 @@
+//////////////////////////////////////////////////
+// Author: Jason Cruz
+// Copyright © 2026
+//////////////////////////////////////////////////
 // --- CREATING A VAULT SCANNER ---
 // This script will scan your entire project and count the total lines of code across all relevant files.
 // It ignores common dependency folders and build outputs to give you an accurate "code written" metric.

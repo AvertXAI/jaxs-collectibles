@@ -1,3 +1,7 @@
+//////////////////////////////////////////////////
+// Author: Jason Cruz
+// Copyright © 2026
+//////////////////////////////////////////////////
 // --- CREATING AN ACTIVITY SCANNER ---
 // This script will scan your project for any files that have been created or modified within the last 24 hours.
 // It provides a clear report of recent activity, helping you track your progress and stay motivated.

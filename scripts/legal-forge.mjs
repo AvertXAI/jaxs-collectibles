@@ -1,13 +1,12 @@
+//////////////////////////////////////////////////
+// Author: Jason Cruz
+// Copyright © 2026
+//////////////////////////////////////////////////
 import fs from 'fs';
 import path from 'path';
 
-const HEADER = `//////////////////////////////////////////////////
-// Author: Jason Cruz
-// Copyright © 2026
-//////////////////////////////////////////////////\n`;
-
-const TARGET_DIRS = ['./app', './components', './brain', './lib'];
-const EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx'];
+const TARGET_DIRS = ['./app', './components', './brain', './lib', './scripts']; // Add more directories as needed
+const EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx', 'py'];
 
 function processFiles(dir) {
     const files = fs.readdirSync(dir);

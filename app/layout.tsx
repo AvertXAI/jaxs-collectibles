@@ -10,6 +10,7 @@ import AdminToolbar from "@/components/admin-toolbar";
 import { Footer } from '@/components/global/footer';
 import { CartProvider } from '@/context/CartContext';
 import { CartSidebar } from '@/components/global/cart-sidebar';
+import SupabaseProvider from '@/components/supabase-provider'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,35 +18,23 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+// Example of what it should look like:
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="light" style={{ colorScheme: 'light' }}>
-      <body className={`bg-[#FDFBF7] text-[#1A1A1A] antialiased ${geistSans.variable} min-h-screen flex flex-col`}>
-        <CartProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="light"
-            forcedTheme="light"
-            enableSystem={false}
-            disableTransitionOnChange
-          >
-            <AdminToolbar />
+    <html lang="en">
+      <body className="...">
+        {/* ADD THIS WRAPPER */}
+        <SupabaseProvider>
 
-            <CartSidebar />
-
+          <CartProvider>
             <Header />
-
-            <main className="relative flex-grow">
-              {children}
-            </main>
-
+            <main>{children}</main>
             <Footer />
-          </ThemeProvider>
-        </CartProvider>
+            <CartSidebar />
+          </CartProvider>
+
+          {/* ADD THIS CLOSING TAG */}
+        </SupabaseProvider>
       </body>
     </html>
   );

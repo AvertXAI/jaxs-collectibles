@@ -1,3 +1,7 @@
+//////////////////////////////////////////////////
+// Author: Jason Cruz
+// Copyright © 2026
+//////////////////////////////////////////////////
 const fs = require('fs');
 const path = require('path');
 
@@ -8,19 +12,9 @@ const ROOT_DIR = path.resolve(__dirname, '..');
 const OUTPUT_FILE = path.join(__dirname, '_codebase_dump.txt');
 
 // THE SHIELD: Now specifically ignoring the 'scripts' folder itself
-const IGNORE_LIST = [
-    'node_modules',
-    '.git',
-    '.next',
-    '.vercel',
-    'public',
-    'package-lock.json',
-    '.env',
-    '.env.local',
-    'scripts' // Prevents infinite loops and ignores our own utility tools
-];
+const IGNORE_LIST = ['.git', 'node_modules', '.pytest_cache', 'Joplin', 'Postgres', 'SSH', 'dist', 'build'];
 
-const ALLOWED_EXTS = ['.js', '.jsx', '.ts', '.tsx', '.css', '.json', '.sql'];
+const ALLOWED_EXTS = ['.js', '.cpp', '.h', '.py', '.qml', '.json', '.md', '.ts', '.tsx'];
 
 function walkDir(dir, fileList = []) {
     const files = fs.readdirSync(dir);

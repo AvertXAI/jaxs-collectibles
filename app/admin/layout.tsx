@@ -6,11 +6,15 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabaseClient'
+// THE FIX: We use the hook here, NOT the provider component itself, and NOT the old client file.
+import { useSupabase } from '@/components/supabase-provider'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const [authorized, setAuthorized] = useState(false)
     const router = useRouter()
+
+    // THE FIX: Grab the singleton instance from the provider
+    const supabase = useSupabase()
 
     useEffect(() => {
         async function checkAccess() {
@@ -27,7 +31,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 .eq('id', user.id)
                 .single()
 
-            // THE FIX: Explicitly allow 'owner' rank
             if (profile?.role === 'admin' || profile?.role === 'owner') {
                 setAuthorized(true)
             } else {
@@ -35,7 +38,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             }
         }
         checkAccess()
-    }, [router])
+    }, [router, supabase]) // Added supabase to dependency array
 
     if (!authorized) {
         return (
