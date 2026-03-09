@@ -51,7 +51,7 @@ export default function Header() {
       <div className="hidden lg:flex items-center justify-between px-8 py-4 max-w-[1800px] mx-auto w-full">
         {/* 1. LEFT: LOGO */}
         <Link href="/" className="flex items-center gap-4 group">
-          <div className="relative w-16 h-16">
+          <div className="relative w-20 h-20">
             <NextImage src="/logo.png" alt="Jax's Collectibles" fill className="object-contain drop-shadow-md group-hover:scale-110 transition-transform" priority />
           </div>
           <div className="flex flex-col">
@@ -109,7 +109,7 @@ export default function Header() {
 
           <Link href="/" className="flex items-center gap-3">
             {/* THE FIX: Much larger logo (w-16 h-16) + flex-shrink-0 to prevent squishing */}
-            <div className="relative w-16 h-16 flex-shrink-0">
+            <div className="relative w-20 h-20 flex-shrink-0">
               <NextImage src="/logo.png" alt="Jax's Collectibles" fill className="object-contain" priority />
             </div>
             {/* THE FIX: Increased text size to text-xl */}
@@ -120,7 +120,7 @@ export default function Header() {
           </Link>
 
           {/* THE FIX: Added gap-4 for breathing room, restored Heart icon, removed edge-bleeding */}
-          <div className="flex items-center gap-4 text-[#1B263B] flex-shrink-0">
+          <div className="flex items-center gap-3 text-[#1B263B] flex-shrink-0">
             <Link href="/search" className="hover:text-[#590202]"><Search size={22} /></Link>
 
             <button onClick={() => setCartOpen(!isCartOpen)} className="relative hover:text-[#590202]">
@@ -145,7 +145,7 @@ export default function Header() {
         </div>
 
         {/* TIER 2: QUICK SCROLL NAV (NO HAMBURGER) */}
-        <nav className="flex items-center gap-6 px-5 py-3 border-t border-gray-100 overflow-x-auto no-scrollbar whitespace-nowrap bg-white shadow-inner">
+        <nav className="flex items-center gap-6 px-6 py-3 border-t border-gray-100 overflow-x-auto no-scrollbar whitespace-nowrap bg-white shadow-inner">
           <Link href="/" className="text-[11px] font-black uppercase tracking-widest text-[#590202]">Home</Link>
           <Link href="/shop" className="text-[11px] font-black uppercase tracking-widest text-[#1B263B]">Shop</Link>
           <Link href="/under-construction" className="text-[11px] font-black uppercase tracking-widest text-[#1B263B] opacity-70">Blog</Link>
