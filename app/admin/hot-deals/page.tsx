@@ -1,6 +1,7 @@
 //////////////////////////////////////////////////
 // Author: Jason Cruz
 // Copyright © 2026
+// File: app/admin/hot-deals/page.tsx
 //////////////////////////////////////////////////
 'use client'
 import { Flame, Percent, Save, ArrowLeft } from 'lucide-react'

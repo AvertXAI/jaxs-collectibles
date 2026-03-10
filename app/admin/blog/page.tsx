@@ -1,6 +1,7 @@
 //////////////////////////////////////////////////
 // Author: Jason Cruz
 // Copyright © 2026
+// File: app/admin/blog/page.tsx
 //////////////////////////////////////////////////
 'use client'
 import { PenLine, Eye, Trash2, Clock, ArrowLeft } from 'lucide-react'

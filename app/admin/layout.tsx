@@ -1,46 +1,31 @@
 //////////////////////////////////////////////////
 // Author: Jason Cruz
 // Copyright © 2026
+// File: app/admin/layout.tsx
 //////////////////////////////////////////////////
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-// THE FIX: We use the hook here, NOT the provider component itself, and NOT the old client file.
-import { useSupabase } from '@/components/supabase-provider'
+import { useIdentity } from '@/context/IdentityContext'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-    const [authorized, setAuthorized] = useState(false)
+    // THE FIX: Instantly grab the global state
+    const { user, role, loading } = useIdentity()
     const router = useRouter()
 
-    // THE FIX: Grab the singleton instance from the provider
-    const supabase = useSupabase()
-
     useEffect(() => {
-        async function checkAccess() {
-            const { data: { user } } = await supabase.auth.getUser()
-
+        // Only redirect if we have finished loading
+        if (!loading) {
             if (!user) {
                 router.push('/auth')
-                return
-            }
-
-            const { data: profile } = await supabase
-                .from('profiles')
-                .select('role')
-                .eq('id', user.id)
-                .single()
-
-            if (profile?.role === 'admin' || profile?.role === 'owner') {
-                setAuthorized(true)
-            } else {
-                router.push('/') // Boot non-admins to home
+            } else if (role !== 'admin' && role !== 'owner') {
+                router.push('/')
             }
         }
-        checkAccess()
-    }, [router, supabase]) // Added supabase to dependency array
+    }, [user, role, loading, router])
 
-    if (!authorized) {
+    if (loading || !user || (role !== 'admin' && role !== 'owner')) {
         return (
             <div className="min-h-screen bg-[#F2EFDF] flex items-center justify-center font-black animate-pulse text-[#590202]">
                 VERIFYING CLEARANCE...

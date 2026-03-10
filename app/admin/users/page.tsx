@@ -1,42 +1,43 @@
 //////////////////////////////////////////////////
 // Author: Jason Cruz
 // Copyright © 2026
+// File: app/admin/users/page.tsx
 //////////////////////////////////////////////////
 'use client'
 import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabaseClient' // SINGLETON CLIENT
+import { useSupabase } from '@/components/supabase-provider' // THE FIX
 import { ShieldCheck, User, ArrowLeft, Crown, ShieldAlert } from 'lucide-react'
 import Link from 'next/link'
 
 export default function UserManagement() {
+    const supabase = useSupabase() // THE FIX
     const [profiles, setProfiles] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
-        fetchProfiles()
-    }, [])
+        const fetchProfiles = async () => {
+            setLoading(true)
+            try {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .order('role', { ascending: false })
 
-    const fetchProfiles = async () => {
-        setLoading(true)
-        try {
-            const { data, error } = await supabase
-                .from('profiles')
-                .select('*')
-                .order('role', { ascending: false }) // Owner/Admin first
-
-            if (error) throw error
-            if (data) setProfiles(data)
-        } catch (err: any) {
-            setError(err.message)
-            console.error("VAULT_FETCH_ERROR:", err.message)
-        } finally {
-            setLoading(false)
+                if (error) throw error
+                if (data) setProfiles(data)
+            } catch (err: any) {
+                setError(err.message)
+                console.error("VAULT_FETCH_ERROR:", err.message)
+            } finally {
+                setLoading(false)
+            }
         }
-    }
+
+        if (supabase) fetchProfiles()
+    }, [supabase])
 
     const toggleRole = async (profileId: string, currentRole: string, email: string) => {
-        // GOD MODE PROTECTION: UI cannot modify Owner rank
         if (currentRole === 'owner') {
             alert("SECURITY VIOLATION: Owner rank is immutable via standard UI.")
             return
@@ -49,12 +50,11 @@ export default function UserManagement() {
 
         if (confirmed) {
             try {
-                // EXPLICIT UPDATE: Using the singleton client
                 const { data, error } = await supabase
                     .from('profiles')
                     .update({ role: newRole })
                     .eq('id', profileId)
-                    .select(); // Ask for data back to confirm it hit the DB
+                    .select();
 
                 if (error) {
                     console.error("DB_REJECTED:", error.message);
@@ -62,7 +62,6 @@ export default function UserManagement() {
                 }
 
                 if (data && data.length > 0) {
-                    // Sync UI only AFTER DB confirms success
                     setProfiles(profiles.map(p => p.id === profileId ? { ...p, role: newRole } : p));
                     alert(`Vault Rank Updated: ${newRole.toUpperCase()}`);
                 }

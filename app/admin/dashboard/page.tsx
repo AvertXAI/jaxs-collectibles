@@ -1,14 +1,16 @@
 //////////////////////////////////////////////////
 // Author: Jason Cruz
 // Copyright © 2026
+// File: app/admin/dashboard/page.tsx
 //////////////////////////////////////////////////
 'use client'
 import { Database, LayoutDashboard, Package, Users, Settings, Flame, User, AlertOctagon, FileText } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabaseClient'
+import { useSupabase } from '@/components/supabase-provider'
 
 export default function AdminDashboard() {
+    const supabase = useSupabase();
     const [isOwner, setIsOwner] = useState(false);
     const [purging, setPurging] = useState(false);
 
@@ -20,8 +22,8 @@ export default function AdminDashboard() {
                 if (profile?.role === 'owner') setIsOwner(true);
             }
         }
-        verifyOwner();
-    }, []);
+        if (supabase) verifyOwner();
+    }, [supabase]);
 
     const handlePurge = async () => {
         const confirm1 = window.confirm("WARNING: You are about to initiate the Purge Protocol. This will delete ALL inventory and mock users. Proceed?");
@@ -43,6 +45,8 @@ export default function AdminDashboard() {
         }
     }
 
+    const sidebarLinkClass = "flex items-center gap-4 bg-white border border-[#D9B36C]/20 hover:bg-[#590202] hover:text-white text-[#1B263B] p-5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all group shadow-sm";
+
     return (
         <main className="min-h-screen admin-bg p-8">
             <header className="flex justify-between items-center mb-12 border-b border-[#D9B36C]/30 pb-6">
@@ -62,38 +66,50 @@ export default function AdminDashboard() {
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                 <aside className="xl:col-span-1 flex flex-col gap-3">
+
                     <Link href="/admin/dashboard" className="flex items-center gap-4 bg-[#590202] text-white p-5 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl">
                         <LayoutDashboard size={20} /> Dashboard
                     </Link>
-                    <Link href="/under-construction" className="block bg-white border border-[#D9B36C]/20 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:border-[#D9B36C] hover:-translate-y-1 transition-all group">
+
+                    <Link href="/admin/users" className="block bg-white border border-[#D9B36C]/20 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:bg-[#590202] hover:border-[#590202] hover:-translate-y-1 transition-all group">
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-full bg-[#F2EFDF] flex items-center justify-center text-[#1B263B] group-hover:bg-[#590202] group-hover:text-white transition-colors">
+                            <div className="w-12 h-12 rounded-full bg-[#F2EFDF] flex items-center justify-center text-[#1B263B] group-hover:bg-white/10 group-hover:text-white transition-colors">
                                 <User size={20} />
                             </div>
                             <div>
-                                <h3 className="text-sm font-black uppercase tracking-widest text-[#1B263B]">Access Control</h3>
-                                <p className="text-[10px] font-bold text-[#1B263B]/50 mt-1 uppercase tracking-widest">Manage Admin Roles</p>
+                                <h3 className="text-sm font-black uppercase tracking-widest text-[#1B263B] group-hover:text-white transition-colors">Access Control</h3>
+                                <p className="text-[10px] font-bold text-[#1B263B]/50 mt-1 uppercase tracking-widest group-hover:text-white/60 transition-colors">Manage Admin Roles</p>
                             </div>
                         </div>
                     </Link>
-                    <Link href="/admin/shop" className="flex items-center gap-4 bg-white border border-[#D9B36C]/20 hover:bg-[#F2EFDF] text-[#1B263B] p-5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all">
-                        <Package size={20} /> Inventory
+
+                    <Link href="/admin/shop" className={sidebarLinkClass}>
+                        <Package size={20} className="group-hover:text-[#D9B36C] transition-colors" /> Inventory
                     </Link>
-                    <Link href="/admin/customers" className="flex items-center gap-4 bg-white border border-[#D9B36C]/20 hover:bg-[#F2EFDF] text-[#1B263B] p-5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all">
-                        <Users size={20} /> Customers / CRM
+
+                    <Link href="/admin/customers" className={sidebarLinkClass}>
+                        <Users size={20} className="group-hover:text-[#D9B36C] transition-colors" /> Customers / CRM
                     </Link>
-                    <Link href="/under-construction" className="flex items-center gap-4 bg-white border border-[#D9B36C]/20 hover:bg-[#F2EFDF] text-[#1B263B] p-5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all">
-                        <FileText size={20} /> Blog / Ledger
+
+                    {/* THE FIX: Linked to Blog Page */}
+                    <Link href="/admin/blog" className={sidebarLinkClass}>
+                        <FileText size={20} className="group-hover:text-[#D9B36C] transition-colors" /> Blog / Ledger
                     </Link>
-                    <Link href="/under-construction" className="flex items-center gap-4 bg-white border border-[#D9B36C]/20 hover:bg-[#F2EFDF] text-[#1B263B] p-5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all">
-                        <Users size={20} /> Inbox / Tickets
+
+                    {/* THE FIX: Linked to Contact Page */}
+                    <Link href="/admin/contact" className={sidebarLinkClass}>
+                        <Users size={20} className="group-hover:text-[#D9B36C] transition-colors" /> Inbox / Tickets
                     </Link>
-                    <Link href="/admin/faq" className="flex items-center gap-4 bg-white border border-[#D9B36C]/20 hover:bg-[#F2EFDF] text-[#1B263B] p-5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all">
-                        <Database size={20} /> FAQ Intelligence
+
+                    <Link href="/admin/faq" className={sidebarLinkClass}>
+                        <Database size={20} className="group-hover:text-[#D9B36C] transition-colors" /> FAQ Intelligence
                     </Link>
-                    <Link href="/under-construction" className="flex items-center gap-4 bg-white border border-[#D9B36C]/20 hover:bg-[#F2EFDF] text-[#1B263B] p-5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all">
-                        <Flame size={20} /> Market Volatility
+
+                    {/* THE FIX: Linked to Hot Deals Page */}
+                    <Link href="/admin/hot-deals" className={sidebarLinkClass}>
+                        <Flame size={20} className="group-hover:text-[#D9B36C] transition-colors" /> Market Volatility
                     </Link>
+
                 </aside>
 
                 <div className="lg:col-span-3 space-y-8">

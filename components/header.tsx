@@ -1,43 +1,28 @@
 //////////////////////////////////////////////////
 // Author: Jason Cruz
 // Copyright © 2026
+// File: components/header.tsx
 //////////////////////////////////////////////////
 'use client'
-import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { Search, ShoppingCart, User, LogOut, Heart } from 'lucide-react'
 import Link from 'next/link'
 import NextImage from 'next/image'
 import { useCart } from '@/context/CartContext'
 import { useSupabase } from '@/components/supabase-provider'
+import { useIdentity } from '@/context/IdentityContext'
 
 export default function Header() {
   const pathname = usePathname();
   const { cart, isCartOpen, setCartOpen } = useCart();
-  const [user, setUser] = useState<any>(null);
-
-  // THE FIX: You are missing this line right here! 👇
   const supabase = useSupabase();
 
-  // THE AUTH MECHANIC: Instantly toggle Login/Logout icons based on session
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      setUser(data?.user || null);
-    };
-    checkUser();
-
-    // THE FIX: Added explicit ': any' to satisfy TypeScript strict mode
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
-      setUser(session?.user || null);
-    });
-
-    return () => authListener.subscription.unsubscribe();
-  }, [supabase]);
+  // THE NEW ARCHITECTURE: This single line replaces all the old useEffect/useState logic!
+  const { user } = useIdentity();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    window.location.reload(); // Hard flush the client state
+    window.location.href = '/'; // Hard flush the client state and go to home
   };
 
   // Hide header inside Admin/Vault routes
@@ -56,7 +41,6 @@ export default function Header() {
         {/* 1. LEFT: LOGO */}
         <Link href="/" className="flex items-center gap-4 group">
           <div className="w-20 h-20 flex items-center justify-center">
-            {/* THE FIX: Explicit width/height with auto styling kills the aspect-ratio warning */}
             <NextImage
               src="/logo.png"
               alt="Jax's Collectibles"
@@ -79,7 +63,7 @@ export default function Header() {
           <Link href="/shop" className="text-[13px] font-black uppercase tracking-[0.2em] text-[#1B263B] hover:text-[#590202] transition-colors">Shop</Link>
           <Link href="/under-construction" className="text-[13px] font-black uppercase tracking-[0.2em] text-[#1B263B] opacity-50 hover:opacity-100 transition-opacity">Blog</Link>
           <Link href="/under-construction" className="text-[13px] font-black uppercase tracking-[0.2em] text-[#1B263B] opacity-50 hover:opacity-100 transition-opacity">Contact Us</Link>
-          <Link href="/shop?filter=hot" className="text-[13px] font-black uppercase tracking-[0.2em] text-[#590202] flex items-center gap-2">
+          <Link href="/under-construction?filter=hot" className="text-[13px] font-black uppercase tracking-[0.2em] text-[#590202] flex items-center gap-2">
             <span className="w-1.5 h-1.5 bg-[#590202] rounded-full animate-ping"></span> Hot Deals
           </Link>
         </nav>
@@ -96,7 +80,7 @@ export default function Header() {
                 </span>
               )}
             </button>
-            <Link href="/wishlist" className="text-[#1B263B] hover:text-[#590202] transition-colors"><Heart size={22} /></Link>
+            <Link href="/under-construction" className="hover:text-[#590202]"><Heart size={22} /></Link>
           </div>
 
           {user ? (
@@ -122,7 +106,6 @@ export default function Header() {
 
           <Link href="/" className="flex items-center gap-3">
             <div className="w-20 h-20 flex-shrink-0 flex items-center justify-center">
-              {/* THE FIX: Explicit width/height with auto styling kills the aspect-ratio warning */}
               <NextImage
                 src="/logo.png"
                 alt="Jax's Collectibles"
@@ -150,7 +133,7 @@ export default function Header() {
               )}
             </button>
 
-            <Link href="/wishlist" className="hover:text-[#590202]"><Heart size={22} /></Link>
+            <Link href="/under-construction" className="text-[#1B263B] hover:text-[#590202] transition-colors"><Heart size={22} /></Link>
 
             {/* DYNAMIC LOGIN / LOGOUT TOGGLE */}
             {user ? (

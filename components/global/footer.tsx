@@ -1,6 +1,7 @@
 //////////////////////////////////////////////////
 // Author: Jason Cruz
 // Copyright © 2026
+// File: components/global/footer.tsx
 //////////////////////////////////////////////////
 import Link from 'next/link'
 import Image from 'next/image'
@@ -13,7 +14,7 @@ export function Footer() {
             {/* TRANSACTION FEE & SOCIAL STRIP */}
             <div className="container mx-auto px-8 mb-16 text-center border-b border-white/10 pb-12">
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#D9B36C] mb-8">
-                    © 2026 Jax's Collectibles | 5% Transaction Fee Applies
+                    © 2026 Jax's Collectibles
                 </p>
                 <div className="flex justify-center gap-8 text-[#F2EFDF]/60">
                     <Instagram size={20} className="hover:text-[#D9B36C] cursor-pointer transition-colors hover:scale-110" />
@@ -23,26 +24,28 @@ export function Footer() {
                 </div>
             </div>
 
-            {/* THE FIX: Changed grid alignment to items-start */}
             <div className="container mx-auto px-8 grid grid-cols-1 md:grid-cols-4 gap-12 mb-16 items-start">
 
                 {/* COLUMN 1: BRAND IDENTITY */}
-                <div className="flex flex-col gap-6">
-                    {/* THE FIX: -mt-4 pulls the logo up to align perfectly with the text headers */}
-                    <Image
-                        src="/logo.png"
-                        alt="Jax's Collectibles"
-                        width={180}
-                        height={60}
-                        className="grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-500 -mt-12"
-                    />
+                <div className="flex flex-col items-center md:items-start text-center md:text-left">
+                    {/* THE FIX: Raised to -mt-12 to lift the logo above the reference line, keeping full size. */}
+                    <div className="relative flex items-center justify-center md:justify-start -mt-24 mb-6">
+                        <Image
+                            src="/logo.png"
+                            alt="Jax's Collectibles"
+                            width={192} // Large Native Width
+                            height={64} // Large Native Height
+                            style={{ width: 'auto', height: 'auto', maxHeight: 'none' }} // Strictly prevent shrinking
+                            className="object-contain grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-500"
+                        />
+                    </div>
                     <p className="text-[#F2EFDF]/60 text-sm leading-relaxed font-medium">
                         The premiere destination for high-asset memorabilia and authenticated collectibles. Every item secured, every transaction verified.
                     </p>
                 </div>
 
                 {/* COLUMN 2: THE VAULT SECTORS */}
-                <div>
+                <div className="text-center md:text-left">
                     <h4 className="text-[#D9B36C] font-black uppercase tracking-widest text-xs mb-8">The Vault Sectors</h4>
                     <ul className="space-y-4 text-sm font-bold text-[#F2EFDF]/70 uppercase tracking-tighter">
                         <li><Link href="/shop" className="hover:text-white hover:translate-x-1 inline-block transition-all">All Inventory</Link></li>
@@ -53,7 +56,7 @@ export function Footer() {
                 </div>
 
                 {/* COLUMN 3: COLLECTOR SERVICES */}
-                <div>
+                <div className="text-center md:text-left">
                     <h4 className="text-[#D9B36C] font-black uppercase tracking-widest text-xs mb-8">Collector Services</h4>
                     <ul className="space-y-4 text-sm font-bold text-[#F2EFDF]/70 uppercase tracking-tighter">
                         <li><Link href="/under-construction" className="hover:text-white hover:translate-x-1 inline-block transition-all">Authentication</Link></li>
@@ -65,14 +68,14 @@ export function Footer() {
                 </div>
 
                 {/* COLUMN 4: SECURITY & PROTOCOLS */}
-                <div>
+                <div className="text-center md:text-left">
                     <h4 className="text-[#D9B36C] font-black uppercase tracking-widest text-xs mb-8">Security & Protocols</h4>
-                    <div className="bg-white/5 p-6 rounded-2xl border border-[#D9B36C]/20 backdrop-blur-sm">
-                        <div className="flex items-center gap-3 text-[#D9B36C] mb-3">
+                    <div className="bg-white/5 p-6 rounded-2xl border border-[#D9B36C]/20 backdrop-blur-sm flex flex-col items-center md:items-start">
+                        <div className="flex items-center justify-center md:justify-start gap-3 text-[#D9B36C] mb-3">
                             <ShieldCheck size={20} />
                             <span className="font-black uppercase tracking-widest text-[10px]">Verified Vault Integrity</span>
                         </div>
-                        <p className="text-[10px] font-bold text-[#F2EFDF]/60 leading-relaxed uppercase tracking-widest">
+                        <p className="text-[10px] font-bold text-[#F2EFDF]/60 leading-relaxed uppercase tracking-widest text-center md:text-left">
                             Transactions protected by PCI-DSS Level 1 compliance and 256-bit SSL encryption.
                         </p>
                     </div>
