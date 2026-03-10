@@ -5,14 +5,15 @@
 //////////////////////////////////////////////////
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { ShieldCheck, Search as SearchIcon } from 'lucide-react'
 import { useSupabase } from '@/components/supabase-provider'
 
-export default function SearchVault() {
+// THE FIX: Move all search logic into a sub-component
+function SearchContent() {
     const supabase = useSupabase();
     const searchParams = useSearchParams();
     const initialQuery = searchParams.get('q') || '';
@@ -30,7 +31,6 @@ export default function SearchVault() {
 
             setLoading(true)
             try {
-                // ILIKE performs a case-insensitive search across the name
                 const { data, error } = await supabase
                     .from('products')
                     .select('*')
@@ -47,7 +47,6 @@ export default function SearchVault() {
             }
         }
 
-        // Debounce search so it doesn't spam Supabase on every keystroke
         const delaySearch = setTimeout(() => {
             if (supabase) performSearch();
         }, 300);
@@ -56,8 +55,7 @@ export default function SearchVault() {
     }, [query, supabase])
 
     return (
-        <main className="min-h-screen bg-[#FDFBF7]">
-
+        <>
             {/* SEARCH HEADER */}
             <section className="bg-white py-16 border-b border-[#D9B36C]/20 shadow-sm pt-32">
                 <div className="container mx-auto px-8 relative z-10 text-center max-w-3xl">
@@ -82,7 +80,7 @@ export default function SearchVault() {
                 </div>
             </section>
 
-            {/* INVENTORY GRID (Matches Shop Page) */}
+            {/* INVENTORY GRID */}
             <section className="py-20 container mx-auto px-8 max-w-7xl">
                 {loading ? (
                     <div className="py-20 text-center font-black animate-pulse text-[#590202] uppercase tracking-widest text-xl">
@@ -95,14 +93,11 @@ export default function SearchVault() {
                 ) : products.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                         {products.map((product) => {
-                            // Safely parse images for the grid
                             let displayImg = '/logo.png';
                             if (Array.isArray(product.images) && product.images.length > 0) displayImg = product.images[0];
                             else if (typeof product.images === 'string') {
                                 try { displayImg = JSON.parse(product.images)[0]; } catch (e) { displayImg = product.images; }
-                            } else if (product.image_url) {
-                                displayImg = product.image_url;
-                            }
+                            } else if (product.image_url) { displayImg = product.image_url; }
 
                             return (
                                 <div key={product.id} className="bg-white rounded-2xl border border-[#D9B36C]/30 overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all group flex flex-col">
@@ -124,7 +119,6 @@ export default function SearchVault() {
                                         <h3 className="font-black text-[#1B263B] uppercase leading-tight mb-4 flex-grow text-sm">{product.name}</h3>
                                         <div className="flex items-center justify-between mt-auto pt-4 border-t border-[#D9B36C]/10">
                                             <span className="text-xl font-black text-[#590202]">${product.price}</span>
-                                            {/* THE FIX: Changed 'Inspect item' to 'Inspect' and fixed URL routing */}
                                             <Link href={`/shop/${product.slug || product.id}`} className="bg-[#1B263B] text-white px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-[#D9B36C] hover:text-[#1B263B] transition-colors">
                                                 Inspect
                                             </Link>
@@ -136,6 +130,21 @@ export default function SearchVault() {
                     </div>
                 ) : null}
             </section>
+        </>
+    );
+}
+
+// MAIN EXPORT: Wrapped in Suspense to satisfy Vercel/Next.js Build requirements
+export default function SearchVault() {
+    return (
+        <main className="min-h-screen bg-[#FDFBF7]">
+            <Suspense fallback={
+                <div className="min-h-screen flex items-center justify-center font-black text-[#590202] uppercase tracking-widest">
+                    Initializing Search Interface...
+                </div>
+            }>
+                <SearchContent />
+            </Suspense>
         </main>
     )
 }
