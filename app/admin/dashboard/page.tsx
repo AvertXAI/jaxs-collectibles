@@ -28,7 +28,6 @@ export default function AdminDashboard() {
     const handlePurge = async () => {
         const confirm1 = window.confirm("WARNING: You are about to initiate the Purge Protocol. This will delete ALL inventory and mock users. Proceed?");
         if (!confirm1) return;
-
         const confirm2 = window.confirm("FINAL WARNING: This cannot be undone. Press OK to wipe the Vault.");
         if (confirm2) {
             setPurging(true);
@@ -45,6 +44,7 @@ export default function AdminDashboard() {
         }
     }
 
+    // Standardized Sidebar Link Class for uniform Maroon hovers and White text
     const sidebarLinkClass = "flex items-center gap-4 bg-white border border-[#D9B36C]/20 hover:bg-[#590202] hover:text-white text-[#1B263B] p-5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all group shadow-sm";
 
     return (
@@ -71,45 +71,34 @@ export default function AdminDashboard() {
                         <LayoutDashboard size={20} /> Dashboard
                     </Link>
 
-                    <Link href="/admin/users" className="block bg-white border border-[#D9B36C]/20 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:bg-[#590202] hover:border-[#590202] hover:-translate-y-1 transition-all group">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-full bg-[#F2EFDF] flex items-center justify-center text-[#1B263B] group-hover:bg-white/10 group-hover:text-white transition-colors">
-                                <User size={20} />
-                            </div>
-                            <div>
-                                <h3 className="text-sm font-black uppercase tracking-widest text-[#1B263B] group-hover:text-white transition-colors">Access Control</h3>
-                                <p className="text-[10px] font-bold text-[#1B263B]/50 mt-1 uppercase tracking-widest group-hover:text-white/60 transition-colors">Manage Admin Roles</p>
-                            </div>
-                        </div>
+                    {/* THE ACCESS CONTROL FIX: Standardized, simplified, and bug-free. */}
+                    <Link href="/admin/users" className={sidebarLinkClass}>
+                        <User size={20} /> Access Control
                     </Link>
 
                     <Link href="/admin/shop" className={sidebarLinkClass}>
-                        <Package size={20} className="group-hover:text-[#D9B36C] transition-colors" /> Inventory
+                        <Package size={20} /> Inventory
                     </Link>
 
                     <Link href="/admin/customers" className={sidebarLinkClass}>
-                        <Users size={20} className="group-hover:text-[#D9B36C] transition-colors" /> Customers / CRM
+                        <Users size={20} /> Customers / CRM
                     </Link>
 
-                    {/* THE FIX: Linked to Blog Page */}
                     <Link href="/admin/blog" className={sidebarLinkClass}>
-                        <FileText size={20} className="group-hover:text-[#D9B36C] transition-colors" /> Blog / Ledger
+                        <FileText size={20} /> Blog / Ledger
                     </Link>
 
-                    {/* THE FIX: Linked to Contact Page */}
                     <Link href="/admin/contact" className={sidebarLinkClass}>
-                        <Users size={20} className="group-hover:text-[#D9B36C] transition-colors" /> Inbox / Tickets
+                        <Users size={20} /> Inbox / Tickets
                     </Link>
 
                     <Link href="/admin/faq" className={sidebarLinkClass}>
-                        <Database size={20} className="group-hover:text-[#D9B36C] transition-colors" /> FAQ Intelligence
+                        <Database size={20} /> FAQ Intelligence
                     </Link>
 
-                    {/* THE FIX: Linked to Hot Deals Page */}
                     <Link href="/admin/hot-deals" className={sidebarLinkClass}>
-                        <Flame size={20} className="group-hover:text-[#D9B36C] transition-colors" /> Market Volatility
+                        <Flame size={20} /> Market Volatility
                     </Link>
-
                 </aside>
 
                 <div className="lg:col-span-3 space-y-8">
