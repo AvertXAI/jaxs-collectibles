@@ -37,7 +37,7 @@ export async function executeDatabasePurge() {
     // 3. PURGE PRODUCTS & IMAGES
     const { data: files } = await supabaseAdmin.storage.from('vault-assets').list('products');
     if (files && files.length > 0) {
-        const filePaths = files.map(x => `products/${x.name}`);
+        const filePaths = files.map((x: any) => `products/${x.name}`);
         await supabaseAdmin.storage.from('vault-assets').remove(filePaths);
     }
 
