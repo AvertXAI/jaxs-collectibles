@@ -140,3 +140,19 @@
   - `components/header.tsx` — added FAQ link between Shop and Hot Deals in both desktop and mobile navs
   - `app/admin/dashboard/page.tsx` — removed Market Volatility sidebar item; removed unused `Flame` import
 - **Files:** `components/header.tsx`, `app/admin/dashboard/page.tsx`
+
+---
+
+## [2026-04-24 — Phase 6 Final] — CHORE: Search, Onboarding & Orphaned Seed Files
+
+- **Type:** Cleanup
+- **Issue:** Search page still called `useSupabase`. Onboarding page imported now-deleted auth flows. `lib/seed-data.ts`, `lib/seed-taxes.ts`, `lib/seed-users.ts` were deleted but still imported by `brain/admin/seedMechanic.ts` and `app/checkout/page.tsx`, causing build failures.
+- **Fix:**
+  - `app/api/products/route.ts` — added `?search=` query param support; in-memory filter on name and category (case-insensitive)
+  - `app/search/page.tsx` — removed `useSupabase`; fetches from `/api/products?search=...&limit=20` with 300ms debounce
+  - `app/onboarding/page.tsx` — stubbed to `redirect('/')` (no user accounts in demo)
+  - `brain/admin/seedMechanic.ts` — replaced all Supabase seed logic with a `BrainError` stub pointing to `/api/admin/seed`
+  - `app/checkout/page.tsx` — removed deleted `@/lib/seed-taxes` import; inlined 51-entry `US_STATES` array for state dropdown
+  - **Deleted:** `app/admin/hot-deals/page.tsx`, `lib/seed-data.ts`, `lib/seed-taxes.ts`, `lib/seed-users.ts`
+- **Build:** 35 pages, 0 TypeScript errors
+- **Files:** 5 modified, 4 deleted
