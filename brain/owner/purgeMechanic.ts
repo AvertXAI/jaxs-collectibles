@@ -1,7 +1,12 @@
-//////////////////////////////////////////////////
+//---------------------------------------------------------------------
+// Project: Jax's Collectibles
+// Description: Collecibles that are authenticated.
 // Author: Jason Cruz
-// Copyright © 2026
-//////////////////////////////////////////////////
+// Copyright: (c) 2026 AvertXAI.All Rights Reserved.
+// License: Proprietary / Unauthorized copying of this file is strictly prohibited
+// File: owner/purgeMechanic.ts
+//---------------------------------------------------------------------
+
 import { getAdminCortex } from '../db/adminCortex';
 import { getDbCortex } from '../db/cortex';
 import { BrainError, ErrorSource } from '../errors';

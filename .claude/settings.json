@@ -1,0 +1,6 @@
+{
+  "includeCoAuthoredBy": false,
+  "env": {
+    "GIT_SSH_COMMAND": "/c/Users/lurpz/.ssh/git_ssh.sh"
+  }
+}
