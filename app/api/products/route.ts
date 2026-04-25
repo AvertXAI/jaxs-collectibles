@@ -14,7 +14,15 @@ export async function GET(request: NextRequest) {
   const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
   const limit = Math.max(1, parseInt(searchParams.get('limit') || '12'));
 
-  const all = getProducts();
+  const search = searchParams.get('search') || '';
+  let all = getProducts();
+  if (search) {
+    const s = search.toLowerCase();
+    all = all.filter(p =>
+      p.name.toLowerCase().includes(s) ||
+      p.category.toLowerCase().includes(s)
+    );
+  }
   const total = all.length;
   const totalPages = Math.max(1, Math.ceil(total / limit));
   const from = (page - 1) * limit;

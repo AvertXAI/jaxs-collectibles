@@ -1,8 +1,11 @@
-//////////////////////////////////////////////////
+// -----------------------------------------------------------
 // Author: Jason Cruz
-// Copyright © 2026
+// Copyright: (c) 2026 AvertXAI. All Rights Reserved.
+// Project: AvertXAI Umbrella Enterprise Web
+// Description: Search page — rewired to JSON flat-file store via /api/products
+// License: Proprietary / Unauthorized copying of this file is strictly prohibited
 // File: app/search/page.tsx
-//////////////////////////////////////////////////
+// -----------------------------------------------------------
 'use client'
 
 import { useState, useEffect, Suspense } from 'react'
@@ -10,11 +13,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { ShieldCheck, Search as SearchIcon } from 'lucide-react'
-import { useSupabase } from '@/components/supabase-provider'
 
-// THE FIX: Move all search logic into a sub-component
 function SearchContent() {
-    const supabase = useSupabase();
     const searchParams = useSearchParams();
     const initialQuery = searchParams.get('q') || '';
 
@@ -23,40 +23,24 @@ function SearchContent() {
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
-        async function performSearch() {
-            if (!query.trim()) {
-                setProducts([]);
-                return;
-            }
-
+        const delay = setTimeout(async () => {
+            if (!query.trim()) { setProducts([]); return; }
             setLoading(true)
             try {
-                const { data, error } = await supabase
-                    .from('products')
-                    .select('*')
-                    .ilike('name', `%${query}%`)
-                    .order('created_at', { ascending: false })
-                    .limit(20);
-
-                if (error) throw error;
-                setProducts(data || []);
+                const res = await fetch(`/api/products?search=${encodeURIComponent(query)}&limit=20`)
+                const { products: data } = await res.json()
+                setProducts(data || [])
             } catch (error) {
-                console.error("Vault search error:", error);
+                console.error("Vault search error:", error)
             } finally {
-                setLoading(false);
+                setLoading(false)
             }
-        }
-
-        const delaySearch = setTimeout(() => {
-            if (supabase) performSearch();
-        }, 300);
-
-        return () => clearTimeout(delaySearch);
-    }, [query, supabase])
+        }, 300)
+        return () => clearTimeout(delay)
+    }, [query])
 
     return (
         <>
-            {/* SEARCH HEADER */}
             <section className="bg-white py-16 border-b border-[#D9B36C]/20 shadow-sm pt-32">
                 <div className="container mx-auto px-8 relative z-10 text-center max-w-3xl">
                     <h1 className="text-5xl md:text-6xl font-black italic text-[#590202] uppercase tracking-tighter mb-8">
@@ -80,7 +64,6 @@ function SearchContent() {
                 </div>
             </section>
 
-            {/* INVENTORY GRID */}
             <section className="py-20 container mx-auto px-8 max-w-7xl">
                 {loading ? (
                     <div className="py-20 text-center font-black animate-pulse text-[#590202] uppercase tracking-widest text-xl">
@@ -134,7 +117,6 @@ function SearchContent() {
     );
 }
 
-// MAIN EXPORT: Wrapped in Suspense to satisfy Vercel/Next.js Build requirements
 export default function SearchVault() {
     return (
         <main className="min-h-screen bg-[#FDFBF7]">

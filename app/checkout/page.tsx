@@ -10,7 +10,10 @@ import { ArrowLeft, Lock, ShieldCheck, Truck, CheckCircle2 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { fetchTaxRate } from '@/brain/cart/taxMechanic'
 import { getUserAddresses, addAddress } from '@/brain/users/addressMechanic'
-import { seedTaxes } from '@/lib/seed-taxes' // Using this purely for the UI Dropdown Map
+
+const US_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA',
+  'KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC',
+  'ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY','DC'];
 
 export default function CheckoutPage() {
     const { cart, cartTotal } = useCart()
@@ -229,10 +232,8 @@ export default function CheckoutPage() {
                                                 }}
                                                 className="w-1/4 border border-gray-300 rounded-md px-2 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white"
                                             >
-                                                {seedTaxes.map((state) => (
-                                                    <option key={state.state_code} value={state.state_code}>
-                                                        {state.state_code}
-                                                    </option>
+                                                {US_STATES.map((code) => (
+                                                    <option key={code} value={code}>{code}</option>
                                                 ))}
                                             </select>
 
