@@ -7,7 +7,7 @@
 // File: app/admin/dashboard/page.tsx
 // -----------------------------------------------------------
 'use client'
-import { Database, LayoutDashboard, Package, Users, Settings, Flame, User, AlertOctagon } from 'lucide-react'
+import { Database, LayoutDashboard, Package, Users, Settings, User, AlertOctagon } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 
@@ -70,9 +70,6 @@ export default function AdminDashboard() {
                     </Link>
                     <Link href="/admin/faq" className={sidebarLinkClass}>
                         <Database size={20} /> FAQ Intelligence
-                    </Link>
-                    <Link href="/admin/hot-deals" className={sidebarLinkClass}>
-                        <Flame size={20} /> Market Volatility
                     </Link>
                 </aside>
 

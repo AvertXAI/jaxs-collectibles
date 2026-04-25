@@ -129,3 +129,14 @@
   - `app/admin/dashboard/page.tsx` — removed Blog / Ledger and Inbox / Tickets from sidebar; removed unused `FileText` import
   - Deleted `app/admin/blog/` and `app/admin/contact/` directories
 - **Files:** 2 modified, 2 directories deleted
+
+---
+
+## [2026-04-24] — FEAT: FAQ Link in Header; Remove Market Volatility from Admin Sidebar
+
+- **Type:** Standard
+- **Issue:** Public header had no link to the FAQ page. Admin sidebar still showed Market Volatility (hot-deals), which has no active content.
+- **Fix:**
+  - `components/header.tsx` — added FAQ link between Shop and Hot Deals in both desktop and mobile navs
+  - `app/admin/dashboard/page.tsx` — removed Market Volatility sidebar item; removed unused `Flame` import
+- **Files:** `components/header.tsx`, `app/admin/dashboard/page.tsx`

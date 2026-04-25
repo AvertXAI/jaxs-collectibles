@@ -53,6 +53,7 @@ export default function Header() {
         <nav className="flex items-center gap-8">
           <Link href="/" className="text-[13px] font-black uppercase tracking-[0.2em] text-[#1B263B] hover:text-[#590202] transition-colors">Home</Link>
           <Link href="/shop" className="text-[13px] font-black uppercase tracking-[0.2em] text-[#1B263B] hover:text-[#590202] transition-colors">Shop</Link>
+          <Link href="/faq" className="text-[13px] font-black uppercase tracking-[0.2em] text-[#1B263B] hover:text-[#590202] transition-colors">FAQ</Link>
           <Link href="/under-construction?filter=hot" className="text-[13px] font-black uppercase tracking-[0.2em] text-[#590202] flex items-center gap-2">
             <span className="w-1.5 h-1.5 bg-[#590202] rounded-full animate-ping"></span> Hot Deals
           </Link>
@@ -112,6 +113,7 @@ export default function Header() {
         <nav className="flex items-center gap-6 px-6 py-3 border-t border-gray-100 overflow-x-auto no-scrollbar whitespace-nowrap bg-white shadow-inner">
           <Link href="/" className="text-[11px] font-black uppercase tracking-widest text-[#590202]">Home</Link>
           <Link href="/shop" className="text-[11px] font-black uppercase tracking-widest text-[#1B263B]">Shop</Link>
+          <Link href="/faq" className="text-[11px] font-black uppercase tracking-widest text-[#1B263B]">FAQ</Link>
           <Link href="/shop?filter=hot" className="text-[11px] font-black uppercase tracking-widest text-[#590202] flex items-center gap-1">
             <span className="w-1.5 h-1.5 bg-[#590202] rounded-full animate-ping"></span> Hot Deals
           </Link>
