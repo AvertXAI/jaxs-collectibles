@@ -1,24 +1,13 @@
-//////////////////////////////////////////////////
+// -----------------------------------------------------------
 // Author: Jason Cruz
-// Copyright © 2026
-//////////////////////////////////////////////////
-import { createClient } from '@supabase/supabase-js';
-import { BrainError, ErrorSource } from '../errors';
+// Copyright: (c) 2026 AvertXAI. All Rights Reserved.
+// Project: AvertXAI Umbrella Enterprise Web
+// Description: Admin cortex stub — no-op mock client for boilerplate demo (Supabase removed)
+// License: Proprietary / Unauthorized copying of this file is strictly prohibited
+// File: brain/db/adminCortex.ts
+// -----------------------------------------------------------
+import { mockBrainClient } from './cortex';
 
 export function getAdminCortex() {
-    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-        throw new BrainError("Missing SUPABASE_SERVICE_ROLE_KEY in environment", ErrorSource.AUTH, 500);
-    }
-
-    // Generates a specialized client that overrides security policies for administrative seeding/purging
-    return createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY,
-        {
-            auth: {
-                autoRefreshToken: false,
-                persistSession: false
-            }
-        }
-    );
+  return mockBrainClient as any;
 }

@@ -1,17 +1,14 @@
-//////////////////////////////////////////////////
+// -----------------------------------------------------------
 // Author: Jason Cruz
-// Copyright © 2026
-//////////////////////////////////////////////////
+// Copyright: (c) 2026 AvertXAI. All Rights Reserved.
+// Project: AvertXAI Umbrella Enterprise Web
+// Description: Public FAQ page — rewired to JSON flat-file store via /api/faq
+// License: Proprietary / Unauthorized copying of this file is strictly prohibited
+// File: app/faq/page.tsx
+// -----------------------------------------------------------
 'use client'
 import { useState, useEffect } from 'react'
-import { createClient } from '@supabase/supabase-js'
 import { ChevronDown, ChevronUp, LifeBuoy } from 'lucide-react'
-
-// Public Supabase Connection
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
 
 export default function PublicFAQ() {
     const [faqs, setFaqs] = useState<any[]>([])
@@ -21,17 +18,13 @@ export default function PublicFAQ() {
     useEffect(() => {
         async function fetchFaqs() {
             try {
-                const { data, error } = await supabase
-                    .from('faqs')
-                    .select('*')
-                    .order('display_order', { ascending: true });
-
-                if (error) throw error;
-                setFaqs(data || []);
+                const res = await fetch('/api/faq')
+                const data = await res.json()
+                setFaqs(Array.isArray(data) ? data : [])
             } catch (error) {
-                console.error("Failed to load Intelligence:", error);
+                console.error("Failed to load Intelligence:", error)
             } finally {
-                setLoading(false);
+                setLoading(false)
             }
         }
         fetchFaqs()

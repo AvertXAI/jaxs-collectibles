@@ -88,3 +88,44 @@
   - `app/admin/shop/page.tsx` — removed `useSupabase`; fetches from `/api/products?limit=1000`; deletes via DELETE `/api/admin/products/[id]`; accepts `onSuccess` callback to refresh list after add
   - `components/admin/add-product-form.tsx` — removed auth check and `useSupabase`; always renders (demo = always owner); POSTs FormData to `/api/admin/products`; accepts `onSuccess` prop
 - **Files:** 11 files modified/created (see above)
+
+---
+
+## [2026-04-24 — Phase 5] — CHORE: Remove Supabase Environment & Config
+
+- **Type:** Cleanup
+- **Issue:** `next.config.ts` still allowed Supabase image hostnames as remote patterns; `package.json` still listed all three `@supabase` packages as dependencies.
+- **Fix:**
+  - `next.config.ts` — removed `**.supabase.co` remotePattern
+  - `package.json` — removed `@supabase/auth-helpers-nextjs`, `@supabase/ssr`, `@supabase/supabase-js` from dependencies
+- **Files:** `next.config.ts`, `package.json`
+
+---
+
+## [2026-04-24 — Phase 6] — CHORE: Delete Dead Supabase Files & Stub Brain Cortex
+
+- **Type:** Cleanup
+- **Issue:** 22+ orphaned files still imported `@supabase` packages (removed in Phase 5). Brain cortex modules (`brain/db/cortex.ts`, `brain/db/adminCortex.ts`) still used real Supabase clients, breaking all admin API routes at build time.
+- **Fix:**
+  - `brain/db/cortex.ts` — replaced real Supabase SSR client with no-op mock; exports `mockBrainClient` for reuse
+  - `brain/db/adminCortex.ts` — replaced real Supabase service-role client; re-exports `mockBrainClient` from cortex.ts
+  - `app/protected/page.tsx` — stubbed to `redirect('/')`
+  - `app/faq/page.tsx` — replaced direct Supabase call with fetch from `/api/faq`
+  - `app/api/faq/route.ts` (new) — public GET from `lib/data/faqs-db.ts`
+  - `app/api/admin/faq/route.ts` — rewired GET/POST/PATCH/DELETE to `lib/data/faqs-db.ts` (fully functional FAQ CRUD)
+  - `lib/data/faqs.json` (new) — 6 pre-seeded demo FAQ entries
+  - `lib/data/faqs-db.ts` (new) — FAQ CRUD module (same pattern as products db.ts)
+  - **Deleted 22 files:** `lib/supabase/` (3), `lib/supabaseClient.ts`, `components/tutorial/` (5), `components/supabase-logo.tsx`, `components/hero.tsx`, `components/next-logo.tsx`, `components/auth-button.tsx`, `components/forgot-password-form.tsx`, `components/login-form.tsx`, `components/logout-button.tsx`, `components/sign-up-form.tsx`, `components/update-password-form.tsx`, `components/deploy-button.tsx`, `components/env-var-warning.tsx`, `components/shop-grid.tsx`, `components/inventory-grid.tsx`
+- **Files:** 7 modified/created, 22 deleted
+
+---
+
+## [2026-04-24] — CHORE: Remove Blog & Contact Pages and Header Links
+
+- **Type:** Cleanup
+- **Issue:** Blog and Contact Us were placeholder links pointing to `/under-construction`. Admin had non-functional Blog / Ledger and Inbox / Tickets sidebar sections.
+- **Fix:**
+  - `components/header.tsx` — removed Blog and Contact Us links from both desktop and mobile navs
+  - `app/admin/dashboard/page.tsx` — removed Blog / Ledger and Inbox / Tickets from sidebar; removed unused `FileText` import
+  - Deleted `app/admin/blog/` and `app/admin/contact/` directories
+- **Files:** 2 modified, 2 directories deleted

@@ -12,10 +12,6 @@ const nextConfig: NextConfig = {
         hostname: 'picsum.photos',
       },
       {
-        protocol: 'https',
-        hostname: '**.supabase.co',
-      },
-      {
         // THE FIX: Authorize Unsplash for the Construction page
         protocol: 'https',
         hostname: 'images.unsplash.com',

@@ -1,0 +1,50 @@
+[
+  {
+    "id": "faq-001",
+    "question": "How do I verify the authenticity of an item?",
+    "answer": "All items in the Vault carry a Certificate of Authenticity (COA) from a recognized third-party grader. Each COA is photographed and stored with the listing. You can request a digital copy at any time by contacting support.",
+    "category": "Authentication",
+    "display_order": 1,
+    "created_at": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "faq-002",
+    "question": "What grading services do you accept?",
+    "answer": "We accept PSA, BGS (Beckett), CGC, CBCS, and SGC certifications for cards and comics. For memorabilia and instruments, we require third-party authentication from JSA, Beckett Authentication, or ACOA.",
+    "category": "Authentication",
+    "display_order": 2,
+    "created_at": "2026-01-02T00:00:00.000Z"
+  },
+  {
+    "id": "faq-003",
+    "question": "How are items shipped and insured?",
+    "answer": "All items are shipped via insured private courier with full item value coverage. Fragile and high-value assets are double-boxed using archival-grade packing materials. Tracking is provided within 24 hours of dispatch.",
+    "category": "Shipping",
+    "display_order": 3,
+    "created_at": "2026-01-03T00:00:00.000Z"
+  },
+  {
+    "id": "faq-004",
+    "question": "What is your return policy?",
+    "answer": "We offer a 30-day return window from the date of delivery. Items must be returned in original condition with all accompanying documentation. Custom or consignment items are non-refundable. Contact support to initiate a return.",
+    "category": "Returns",
+    "display_order": 4,
+    "created_at": "2026-01-04T00:00:00.000Z"
+  },
+  {
+    "id": "faq-005",
+    "question": "Do you accept consignment submissions?",
+    "answer": "Yes. We accept consignment for graded and authenticated collectibles with an estimated value of $200 or more. Submit your item details via the Contact page and our acquisition team will respond within 3 business days.",
+    "category": "Consignment",
+    "display_order": 5,
+    "created_at": "2026-01-05T00:00:00.000Z"
+  },
+  {
+    "id": "faq-006",
+    "question": "What payment methods do you accept?",
+    "answer": "We accept all major credit cards (Visa, Mastercard, Amex), PayPal, and wire transfer for purchases over $5,000. All transactions are processed through PCI-DSS compliant payment infrastructure.",
+    "category": "Payments",
+    "display_order": 6,
+    "created_at": "2026-01-06T00:00:00.000Z"
+  }
+]

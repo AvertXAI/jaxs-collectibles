@@ -1,83 +1,66 @@
-//////////////////////////////////////////////////
+// -----------------------------------------------------------
 // Author: Jason Cruz
-// Copyright © 2026
-//////////////////////////////////////////////////
-import { NextResponse } from "next/server";
-import { getDbCortex } from "@/brain/db/cortex";
-import { getAdminCortex } from "@/brain/db/adminCortex";
+// Copyright: (c) 2026 AvertXAI. All Rights Reserved.
+// Project: AvertXAI Umbrella Enterprise Web
+// Description: Admin FAQ API — CRUD backed by JSON flat-file store
+// License: Proprietary / Unauthorized copying of this file is strictly prohibited
+// File: app/api/admin/faq/route.ts
+// -----------------------------------------------------------
+import { NextResponse } from 'next/server';
+import { getFaqs, addFaq, updateFaq, deleteFaq } from '@/lib/data/faqs-db';
 
-// THE FIX: Prevents Next.js from caching the empty database state
 export const dynamic = 'force-dynamic';
 
-async function verifyClearance() {
-    const supabase = await getDbCortex();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return false;
-
-    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
-    return profile?.role === 'admin' || profile?.role === 'owner';
-}
-
 export async function GET() {
-    try {
-        // THE FIX: Using AdminCortex to ensure 100% read access on the dashboard
-        const supabaseAdmin = getAdminCortex();
-        const { data, error } = await supabaseAdmin.from('faqs').select('*').order('display_order', { ascending: true });
-
-        if (error) {
-            console.error("[FAQ_CORTEX] Read Error:", error);
-            return NextResponse.json([]);
-        }
-        return NextResponse.json(data || []);
-    } catch (err) {
-        console.error("[FAQ_CORTEX] GET Crash:", err);
-        return NextResponse.json([]);
-    }
+  try {
+    return NextResponse.json(getFaqs());
+  } catch (error: any) {
+    return NextResponse.json([], { status: 500 });
+  }
 }
 
 export async function POST(req: Request) {
-    if (!(await verifyClearance())) return NextResponse.json({ error: "Clearance Denied" }, { status: 403 });
-    try {
-        const body = await req.json();
-        const { data, error } = await getAdminCortex().from('faqs').insert([{
-            question: body.question,
-            answer: body.answer,
-            category: body.category || 'General'
-        }]).select();
-
-        if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-        return NextResponse.json(data);
-    } catch (err: any) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
+  try {
+    const body = await req.json();
+    if (!body.question || !body.answer) {
+      return NextResponse.json({ error: 'Question and answer are required.' }, { status: 400 });
     }
+    const faq = addFaq({
+      question: body.question,
+      answer: body.answer,
+      category: body.category || 'General',
+      display_order: 0,
+    });
+    return NextResponse.json([faq]);
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 }
 
 export async function PATCH(req: Request) {
-    if (!(await verifyClearance())) return NextResponse.json({ error: "Clearance Denied" }, { status: 403 });
-    try {
-        const body = await req.json();
-        const { data, error } = await getAdminCortex().from('faqs').update({
-            question: body.question,
-            answer: body.answer,
-            category: body.category || 'General'
-        }).eq('id', body.id).select();
-
-        if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-        return NextResponse.json(data);
-    } catch (err: any) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
-    }
+  try {
+    const body = await req.json();
+    if (!body.id) return NextResponse.json({ error: 'ID required.' }, { status: 400 });
+    const updated = updateFaq(body.id, {
+      question: body.question,
+      answer: body.answer,
+      category: body.category || 'General',
+    });
+    if (!updated) return NextResponse.json({ error: 'FAQ not found.' }, { status: 404 });
+    return NextResponse.json([updated]);
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 }
 
 export async function DELETE(req: Request) {
-    if (!(await verifyClearance())) return NextResponse.json({ error: "Clearance Denied" }, { status: 403 });
-    try {
-        const { id } = await req.json();
-        const { error } = await getAdminCortex().from('faqs').delete().eq('id', id);
-
-        if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-        return NextResponse.json({ success: true });
-    } catch (err: any) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
-    }
+  try {
+    const { id } = await req.json();
+    if (!id) return NextResponse.json({ error: 'ID required.' }, { status: 400 });
+    const deleted = deleteFaq(id);
+    if (!deleted) return NextResponse.json({ error: 'FAQ not found.' }, { status: 404 });
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 }
