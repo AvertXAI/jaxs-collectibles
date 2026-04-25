@@ -1,61 +1,53 @@
-//////////////////////////////////////////////////
+// -----------------------------------------------------------
 // Author: Jason Cruz
-// Copyright © 2026
+// Copyright: (c) 2026 AvertXAI. All Rights Reserved.
+// Project: AvertXAI Umbrella Enterprise Web
+// Description: Admin inventory control — rewired to JSON flat-file store
+// License: Proprietary / Unauthorized copying of this file is strictly prohibited
 // File: app/admin/shop/page.tsx
-//////////////////////////////////////////////////
+// -----------------------------------------------------------
 'use client'
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ShieldCheck, Pencil, Trash2, ArrowLeft, PackageSearch } from 'lucide-react'
-import { useSupabase } from '@/components/supabase-provider'
-// Imported component trigger will apply its own styles
 import { AddProductForm } from '@/components/admin/add-product-form'
 
 export default function AdminInventoryControl() {
-    const supabase = useSupabase();
     const [products, setProducts] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
 
-    useEffect(() => {
-        async function fetchInventory() {
-            setLoading(true)
-            try {
-                const { data, error } = await supabase
-                    .from('products')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-
-                if (error) throw error;
-                setProducts(data || []);
-            } catch (error) {
-                console.error("Inventory Sync Error:", error);
-            } finally {
-                setLoading(false);
-            }
+    async function fetchInventory() {
+        setLoading(true)
+        try {
+            const res = await fetch('/api/products?limit=1000')
+            const { products: data } = await res.json()
+            setProducts(data || [])
+        } catch (error) {
+            console.error("Inventory Sync Error:", error)
+        } finally {
+            setLoading(false)
         }
-        if (supabase) fetchInventory();
-    }, [supabase])
+    }
+
+    useEffect(() => { fetchInventory() }, [])
 
     const handleDelete = async (id: string, name: string) => {
         if (!window.confirm(`SECURITY WARNING: Are you sure you want to permanently purge "${name}" from the Vault?`)) return;
-
         try {
-            const { error } = await supabase.from('products').delete().eq('id', id);
-            if (error) throw error;
-
-            setProducts(products.filter(p => p.id !== id));
-            alert("Asset successfully purged.");
+            const res = await fetch(`/api/admin/products/${id}`, { method: 'DELETE' })
+            if (!res.ok) throw new Error('Delete failed')
+            setProducts(products.filter(p => p.id !== id))
+            alert("Asset successfully purged.")
         } catch (error: any) {
-            alert(`Purge Failed: ${error.message}`);
+            alert(`Purge Failed: ${error.message}`)
         }
     }
 
     return (
         <main className="min-h-screen bg-[#F2EFDF] p-8 md:p-12">
 
-            {/* ADMIN HEADER */}
             <header className="mb-12 border-b border-[#D9B36C]/30 pb-6 flex justify-between items-end">
                 <div>
                     <h1 className="text-4xl font-black italic text-[#590202] uppercase tracking-tighter">Inventory Control</h1>
@@ -64,17 +56,13 @@ export default function AdminInventoryControl() {
                     </p>
                 </div>
                 <div className="flex items-center gap-4">
-                    {/* THE FIX: Standardized secondary button style */}
                     <Link href="/admin/dashboard" className="flex items-center gap-2 bg-[#1B263B] text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#590202] transition-all shadow-lg h-auto">
                         <ArrowLeft size={14} /> Back to Dashboard
                     </Link>
-
-                    {/* Component trigger handles its own internal styles (which we just updated!) */}
-                    <AddProductForm />
+                    <AddProductForm onSuccess={fetchInventory} />
                 </div>
             </header>
 
-            {/* INVENTORY LEDGER TABLE */}
             <div className="bg-white rounded-[2.5rem] border border-[#D9B36C]/20 overflow-hidden shadow-2xl">
                 <table className="w-full text-left border-collapse">
                     <thead className="bg-[#1B263B] text-white text-[10px] font-black uppercase tracking-[0.2em]">
@@ -102,7 +90,6 @@ export default function AdminInventoryControl() {
                             </tr>
                         ) : (
                             products.map((product) => {
-                                // Image Parser for safety
                                 let displayImg = '/logo.png';
                                 if (Array.isArray(product.images) && product.images.length > 0) displayImg = product.images[0];
                                 else if (typeof product.images === 'string') {

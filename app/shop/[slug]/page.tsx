@@ -1,8 +1,11 @@
-//////////////////////////////////////////////////
+// -----------------------------------------------------------
 // Author: Jason Cruz
-// Copyright © 2026
+// Copyright: (c) 2026 AvertXAI. All Rights Reserved.
+// Project: AvertXAI Umbrella Enterprise Web
+// Description: Product detail page — rewired to JSON flat-file store via /api/products/[slug]
+// License: Proprietary / Unauthorized copying of this file is strictly prohibited
 // File: app/shop/[slug]/page.tsx
-//////////////////////////////////////////////////
+// -----------------------------------------------------------
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -11,12 +14,10 @@ import Image from 'next/image'
 import { ShieldCheck, ShoppingCart, Heart, Star, Truck, RotateCcw, AlertTriangle } from 'lucide-react'
 import Link from 'next/link'
 import { useCart } from '@/context/CartContext'
-import { useSupabase } from '@/components/supabase-provider'
 
 export default function AssetCloserPage() {
     const { slug } = useParams()
     const { addToCart } = useCart()
-    const supabase = useSupabase()
 
     const [product, setProduct] = useState<any>(null)
     const [loading, setLoading] = useState(true)
@@ -31,10 +32,10 @@ export default function AssetCloserPage() {
                 const slugStr = decodeURIComponent(rawSlug || '');
 
                 // ====================================================
-                // ⚠️ PRESENTATION DEMO OVERRIDE ⚠️
+                // PRESENTATION DEMO OVERRIDE — demo-* slugs bypass DB
                 // ====================================================
                 if (slugStr.startsWith('demo-')) {
-                    let demoProduct = {
+                    let demoProduct: any = {
                         id: slugStr,
                         slug: slugStr,
                         name: "Vault Classified Asset",
@@ -44,70 +45,19 @@ export default function AssetCloserPage() {
                         images: ["/logo.png"],
                         stock: 1
                     };
-
-                    if (slugStr === 'demo-guitar') {
-                        demoProduct.name = "1960s Vintage Sunburst Guitar";
-                        demoProduct.price = 12500.00;
-                        demoProduct.category = "Instruments";
-                        demoProduct.images = ["/4-2.jpg"];
-                    } else if (slugStr === 'demo-batman') {
-                        demoProduct.name = "First Edition Batman Mini-Figure";
-                        demoProduct.price = 450.00;
-                        demoProduct.category = "Statues & Figures";
-                        demoProduct.images = ["/4-3.jpg"];
-                    } else if (slugStr === 'demo-cards') {
-                        demoProduct.name = "Graded TCG Rare Collection";
-                        demoProduct.price = 3200.00;
-                        demoProduct.category = "TCG / Cards";
-                        demoProduct.images = ["/4-4.jpg"];
-                    } else if (slugStr === 'demo-comics') {
-                        demoProduct.name = "Silver Surfer #1 (Pristine Grade)";
-                        demoProduct.price = 8500.00;
-                        demoProduct.category = "First Edition Comics";
-                        demoProduct.images = ["/4-1.jpg"];
-                    }
-
+                    if (slugStr === 'demo-guitar') { demoProduct.name = "1960s Vintage Sunburst Guitar"; demoProduct.price = 12500.00; demoProduct.category = "Instruments"; demoProduct.images = ["/4-2.jpg"]; }
+                    else if (slugStr === 'demo-batman') { demoProduct.name = "First Edition Batman Mini-Figure"; demoProduct.price = 450.00; demoProduct.category = "Statues & Figures"; demoProduct.images = ["/4-3.jpg"]; }
+                    else if (slugStr === 'demo-cards') { demoProduct.name = "Graded TCG Rare Collection"; demoProduct.price = 3200.00; demoProduct.category = "TCG / Cards"; demoProduct.images = ["/4-4.jpg"]; }
+                    else if (slugStr === 'demo-comics') { demoProduct.name = "Silver Surfer #1 (Pristine Grade)"; demoProduct.price = 8500.00; demoProduct.category = "First Edition Comics"; demoProduct.images = ["/4-1.jpg"]; }
                     setProduct(demoProduct);
                     setLoading(false);
                     return;
                 }
 
-                // ====================================================
-                // NORMAL DATABASE BEHAVIOR (CRASH-PROOFED)
-                // Added .limit(1) to EVERYTHING so Postgres never panics
-                // ====================================================
-
-                // 1. Try exact Slug
-                let { data } = await supabase.from('products').select('*').eq('slug', slugStr).limit(1).maybeSingle()
-
-                // 2. Try exact ID (Checks if it's a UUID or an Integer ID)
-                if (!data) {
-                    const isUUID = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(slugStr);
-                    const isNumericId = /^\d+$/.test(slugStr);
-
-                    if (isUUID || isNumericId) {
-                        const { data: idData } = await supabase.from('products').select('*').eq('id', slugStr).limit(1).maybeSingle()
-                        data = idData
-                    }
-                }
-
-                // 3. Try exact Name match (Some items use Name as the Slug)
-                if (!data) {
-                    const cleanName = slugStr.replace(/-/g, ' ');
-                    const { data: nameData } = await supabase.from('products').select('*').ilike('name', cleanName).limit(1).maybeSingle()
-                    data = nameData;
-                }
-
-                // 4. Fuzzy Search Fallback (Takes first word, limits to 1 result to prevent crash)
-                if (!data) {
-                    const fuzzyName = slugStr.replace(/-/g, ' ').split(' ')[0];
-                    if (fuzzyName) {
-                        const { data: fuzzyData } = await supabase.from('products').select('*').ilike('name', `%${fuzzyName}%`).limit(1).maybeSingle()
-                        data = fuzzyData;
-                    }
-                }
-
-                setProduct(data || null);
+                const res = await fetch(`/api/products/${encodeURIComponent(slugStr)}`)
+                if (!res.ok) { setProduct(null); return; }
+                const { product: data } = await res.json()
+                setProduct(data || null)
             } catch (err) {
                 console.error("Vault Decryption Error:", err)
                 setProduct(null)
@@ -115,8 +65,8 @@ export default function AssetCloserPage() {
                 setLoading(false)
             }
         }
-        if (slug && supabase) fetchAsset()
-    }, [slug, supabase])
+        if (slug) fetchAsset()
+    }, [slug])
 
     if (loading) return <div className="min-h-screen flex items-center justify-center font-black animate-pulse text-[#590202] uppercase tracking-[0.5em]">Syncing Asset Intel...</div>
     if (!product) return <div className="min-h-screen flex flex-col items-center justify-center gap-4 pt-20"><ShieldCheck size={48} className="text-[#1B263B]/20" /><div className="font-black uppercase tracking-widest text-[#1B263B]">Asset Purged or Classified.</div><Link href="/shop" className="text-[10px] text-[#590202] uppercase font-bold hover:underline">Return to Ledger</Link></div>
@@ -245,22 +195,9 @@ export default function AssetCloserPage() {
                                         </div>
 
                                         <div className="flex items-center border border-[#D9B36C]/30 rounded-lg overflow-hidden">
-                                            <button
-                                                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                                className="px-4 py-2 hover:bg-[#F2EFDF] font-black text-[#1B263B] transition-colors"
-                                            >
-                                                -
-                                            </button>
-                                            <span className="px-6 py-2 font-black text-[#1B263B] border-x border-[#D9B36C]/30 min-w-[50px] text-center">
-                                                {quantity}
-                                            </span>
-                                            <button
-                                                onClick={() => setQuantity(Math.min(availableStock, quantity + 1))}
-                                                disabled={quantity >= availableStock}
-                                                className={`px-4 py-2 font-black transition-colors ${quantity >= availableStock ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'hover:bg-[#F2EFDF] text-[#1B263B]'}`}
-                                            >
-                                                +
-                                            </button>
+                                            <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-4 py-2 hover:bg-[#F2EFDF] font-black text-[#1B263B] transition-colors">-</button>
+                                            <span className="px-6 py-2 font-black text-[#1B263B] border-x border-[#D9B36C]/30 min-w-[50px] text-center">{quantity}</span>
+                                            <button onClick={() => setQuantity(Math.min(availableStock, quantity + 1))} disabled={quantity >= availableStock} className={`px-4 py-2 font-black transition-colors ${quantity >= availableStock ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'hover:bg-[#F2EFDF] text-[#1B263B]'}`}>+</button>
                                         </div>
                                     </div>
 

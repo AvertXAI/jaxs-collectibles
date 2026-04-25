@@ -1,21 +1,21 @@
-//////////////////////////////////////////////////
+// -----------------------------------------------------------
 // Author: Jason Cruz
-// Copyright © 2026
+// Copyright: (c) 2026 AvertXAI. All Rights Reserved.
+// Project: AvertXAI Umbrella Enterprise Web
+// Description: Shop directory — rewired to JSON flat-file store via /api/products
+// License: Proprietary / Unauthorized copying of this file is strictly prohibited
 // File: app/shop/page.tsx
-//////////////////////////////////////////////////
+// -----------------------------------------------------------
 'use client'
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ShieldCheck, ChevronLeft, ChevronRight, Layout } from 'lucide-react'
-import { useSupabase } from '@/components/supabase-provider'
 
 const ITEMS_PER_PAGE = 12;
 
 export default function ShopDirectory() {
-    const supabase = useSupabase();
-
     const [products, setProducts] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [page, setPage] = useState(1)
@@ -25,29 +25,18 @@ export default function ShopDirectory() {
         async function fetchVaultAssets() {
             setLoading(true)
             try {
-                const from = (page - 1) * ITEMS_PER_PAGE;
-                const to = from + ITEMS_PER_PAGE - 1;
-
-                const { data, error, count } = await supabase
-                    .from('products')
-                    .select('*', { count: 'exact' })
-                    .order('created_at', { ascending: false })
-                    .range(from, to);
-
-                if (error) throw error;
-
-                setProducts(data || []);
-                if (count) {
-                    setTotalPages(Math.ceil(count / ITEMS_PER_PAGE));
-                }
+                const res = await fetch(`/api/products?page=${page}&limit=${ITEMS_PER_PAGE}`)
+                const { products: data, totalPages: pages } = await res.json()
+                setProducts(data || [])
+                setTotalPages(pages || 1)
             } catch (error) {
-                console.error("Vault retrieval error:", error);
+                console.error("Vault retrieval error:", error)
             } finally {
-                setLoading(false);
+                setLoading(false)
             }
         }
-        if (supabase) fetchVaultAssets();
-    }, [page, supabase])
+        fetchVaultAssets()
+    }, [page])
 
     return (
         <main className="min-h-screen bg-[#FDFBF7]">

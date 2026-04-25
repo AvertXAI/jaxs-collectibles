@@ -1,12 +1,14 @@
-//////////////////////////////////////////////////
+// -----------------------------------------------------------
 // Author: Jason Cruz
-// Copyright © 2026
+// Copyright: (c) 2026 AvertXAI. All Rights Reserved.
+// Project: AvertXAI Umbrella Enterprise Web
+// Description: Add Product modal — auth removed, posts to /api/admin/products for boilerplate demo
+// License: Proprietary / Unauthorized copying of this file is strictly prohibited
 // File: components/admin/add-product-form.tsx
-//////////////////////////////////////////////////
+// -----------------------------------------------------------
 "use client";
 
-import { useState, useEffect } from "react";
-import { useSupabase } from "@/components/supabase-provider";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -29,89 +31,41 @@ import {
 } from "@/components/ui/select";
 import { Loader2, Plus, ShieldCheck } from "lucide-react";
 
-export function AddProductForm() {
-  const supabase = useSupabase();
-  const [isAdmin, setIsAdmin] = useState(false);
+interface AddProductFormProps {
+  onSuccess?: () => void;
+}
+
+export function AddProductForm({ onSuccess }: AddProductFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [open, setOpen] = useState(false);
 
-  // Form States
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
 
-  // THE ADMIN GATE: Check if user is an admin on mount
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", user.id)
-          .single();
-        if (profile?.role === "admin" || profile?.role === "owner") setIsAdmin(true);
-      }
-    };
-    if (supabase) checkUser();
-  }, [supabase]);
-
   const handleAddNewProduct = async () => {
     if (!name || !price) return alert("Name and Price are required.");
     setIsSubmitting(true);
 
     try {
-      let finalImageUrl = "/logo.png"; // Fallback image
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('price', price);
+      formData.append('category', category || 'General');
+      formData.append('description', description || 'Classified Vault Asset');
+      if (imageFile) formData.append('image', imageFile);
 
-      // 1. If there is an image, upload it to Supabase Storage first
-      if (imageFile) {
-        const fileExt = imageFile.name.split('.').pop();
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-        const filePath = `vault-assets/${fileName}`;
+      const res = await fetch('/api/admin/products', { method: 'POST', body: formData });
+      const result = await res.json();
 
-        const { error: uploadError } = await supabase.storage
-          .from('product-images')
-          .upload(filePath, imageFile);
-
-        if (uploadError) {
-          console.error("Storage Upload Failed:", uploadError);
-          throw new Error("Failed to upload image to Vault Storage.");
-        }
-
-        // Get the public URL
-        const { data: { publicUrl } } = supabase.storage
-          .from('product-images')
-          .getPublicUrl(filePath);
-
-        finalImageUrl = publicUrl;
-      }
-
-      // 2. Generate a clean URL slug from the name
-      const generatedSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-
-      // 3. Insert directly into the products table
-      const { error: dbError } = await supabase
-        .from('products')
-        .insert({
-          name: name,
-          slug: generatedSlug,
-          description: description || "Classified Vault Asset",
-          price: parseFloat(price),
-          category: category || "General",
-          stock: 1, // Default stock
-          images: [finalImageUrl], // Store as JSON array to match current schema
-          image_url: finalImageUrl // Fallback string
-        });
-
-      if (dbError) throw dbError;
+      if (!res.ok) throw new Error(result.error || 'Unknown error');
 
       alert("Success! Asset secured in the Vault.");
-      setName(""); setDescription(""); setPrice(""); setCategory(""); setImageFile(null); // Reset Form
-      setOpen(false); // Close the modal
-      window.location.reload(); // Refresh to show the new item
-
+      setName(""); setDescription(""); setPrice(""); setCategory(""); setImageFile(null);
+      setOpen(false);
+      onSuccess?.();
     } catch (err: any) {
       console.error(err);
       alert(`Vault Error: ${err.message || "Database synchronization failed."}`);
@@ -120,13 +74,9 @@ export function AddProductForm() {
     }
   };
 
-  // If not admin, don't show the component at all
-  if (!isAdmin) return null;
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {/* THE FIX: Unified standardized secondary header button style */}
         <Button className="flex items-center gap-2 bg-[#590202] text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#D9B36C] hover:text-[#1B263B] transition-all shadow-lg border-0 h-auto">
           <Plus className="h-4 w-4" />
           Add Asset

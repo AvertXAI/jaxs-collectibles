@@ -68,3 +68,23 @@
   - `app/admin/dashboard/page.tsx` — `isOwner` hardcoded `true`, removed `supabase.auth.getUser()` call
   - `app/admin/users/page.tsx` — replaced with demo stub showing single owner row
 - **Files:** 13 files modified (see above)
+
+---
+
+## [2026-04-24 — Phase 3] — FEAT: Shop Pages & Admin Inventory Rewired to JSON Store
+
+- **Type:** Feature / Conversion
+- **Issue:** Shop pages (`/shop`, `/shop/[slug]`, `/admin/shop`) and `AddProductForm` still called `useSupabase()`, which returned an empty mock — all inventory showed blank in the boilerplate demo.
+- **Fix:**
+  - `app/api/products/route.ts` (new) — GET all products with pagination (`?page=X&limit=Y`) from `lib/data/db.ts`
+  - `app/api/products/[id]/route.ts` (updated) — added GET handler using `getProductBySlug()`; replaced PATCH Supabase call with `updateProduct()` from db.ts
+  - `app/api/admin/products/route.ts` (new) — POST new product; saves uploaded image to `/public/uploads/`, calls `addProduct()`
+  - `app/api/admin/products/[id]/route.ts` (new) — DELETE handler using `deleteProduct()`
+  - `app/api/admin/purge/route.ts` (updated) — replaced Supabase purge with `fs.writeFileSync(dbPath, '[]')` (clears products.json)
+  - `app/api/admin/seed/route.ts` (updated) — replaced Supabase seed with copy from `lib/data/products-seed.json` → `products.json`
+  - `lib/data/products-seed.json` (new) — immutable 50-product backup used by seed route to restore after purge
+  - `app/shop/page.tsx` — removed `useSupabase`, fetches from `/api/products?page=X`
+  - `app/shop/[slug]/page.tsx` — removed `useSupabase` multi-step lookup; fetches from `/api/products/[slug]`; preserves `demo-*` override logic
+  - `app/admin/shop/page.tsx` — removed `useSupabase`; fetches from `/api/products?limit=1000`; deletes via DELETE `/api/admin/products/[id]`; accepts `onSuccess` callback to refresh list after add
+  - `components/admin/add-product-form.tsx` — removed auth check and `useSupabase`; always renders (demo = always owner); POSTs FormData to `/api/admin/products`; accepts `onSuccess` prop
+- **Files:** 11 files modified/created (see above)

@@ -1,25 +1,21 @@
-//////////////////////////////////////////////////
+// -----------------------------------------------------------
 // Author: Jason Cruz
-// Copyright © 2026
-//////////////////////////////////////////////////
-import { NextResponse } from "next/server";
-import { executeDatabasePurge } from "@/brain/owner/purgeMechanic";
-import { logBrainFailure } from "@/brain/logger";
-import { BrainError } from "@/brain/errors";
+// Copyright: (c) 2026 AvertXAI. All Rights Reserved.
+// Project: AvertXAI Umbrella Enterprise Web
+// Description: Purge API — resets products.json to empty for boilerplate demo
+// License: Proprietary / Unauthorized copying of this file is strictly prohibited
+// File: app/api/admin/purge/route.ts
+// -----------------------------------------------------------
+import { NextResponse } from 'next/server';
+import fs from 'fs';
+import path from 'path';
 
 export async function DELETE() {
-    try {
-        const result = await executeDatabasePurge();
-        return NextResponse.json({ success: true, ...result });
-    } catch (error: any) {
-        logBrainFailure(error);
-        const status = error instanceof BrainError ? error.statusCode : 500;
-        const source = error instanceof BrainError ? error.source : "UNKNOWN_CORTEX";
-
-        return NextResponse.json({
-            success: false,
-            error: error.message || "Internal Brain Failure",
-            origin: source
-        }, { status });
-    }
+  try {
+    const dbPath = path.join(process.cwd(), 'lib', 'data', 'products.json');
+    fs.writeFileSync(dbPath, '[]', 'utf-8');
+    return NextResponse.json({ success: true, message: 'Vault inventory purged.' });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
 }
